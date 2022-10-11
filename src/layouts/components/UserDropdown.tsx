@@ -24,10 +24,11 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
 // ** Context
-import { useAuth } from 'src/hooks/useAuth'
+import { signOut } from 'firebase/auth'
 
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
+import initializeFirebaseClient from 'src/configs/initFirebase'
 
 interface Props {
   settings: Settings
@@ -51,7 +52,7 @@ const UserDropdown = (props: Props) => {
 
   // ** Hooks
   const router = useRouter()
-  const { logout } = useAuth()
+  const { auth } = initializeFirebaseClient()
 
   // ** Vars
   const { direction } = settings
@@ -82,7 +83,8 @@ const UserDropdown = (props: Props) => {
   }
 
   const handleLogout = () => {
-    logout()
+    signOut(auth)
+    router.push('/login')
     handleDropdownClose()
   }
 
@@ -129,11 +131,7 @@ const UserDropdown = (props: Props) => {
                 horizontal: 'right'
               }}
             >
-              <Avatar
-                alt='John Doe'
-                src='/images/avatars/1.png'
-                sx={{ width: '2.5rem', height: '2.5rem' }}
-              />
+              <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box
               sx={{
@@ -144,10 +142,7 @@ const UserDropdown = (props: Props) => {
               }}
             >
               <Typography sx={{ fontWeight: 600 }}>John Doe</Typography>
-              <Typography
-                variant='body2'
-                sx={{ fontSize: '0.8rem', color: 'text.disabled' }}
-              >
+              <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Admin
               </Typography>
             </Box>

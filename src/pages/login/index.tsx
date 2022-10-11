@@ -1,5 +1,7 @@
 // ** React Imports
 import { useState, ReactNode, MouseEvent } from 'react'
+import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
+import { signInWithCustomToken, signOut } from 'firebase/auth'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -22,21 +24,12 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 
-// ** Icons Imports
-import Google from 'mdi-material-ui/Google'
-import Github from 'mdi-material-ui/Github'
-import Twitter from 'mdi-material-ui/Twitter'
-import Facebook from 'mdi-material-ui/Facebook'
-import EyeOutline from 'mdi-material-ui/EyeOutline'
-import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-
 // ** Third Party Imports
 import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
-import { useAuth } from 'src/hooks/useAuth'
 import useBgColor from 'src/@core/hooks/useBgColor'
 import { useSettings } from 'src/@core/hooks/useSettings'
 
@@ -48,6 +41,9 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import initializeFirebaseClient from 'src/configs/initFirebase'
+import useFirebaseUser from 'src/hooks/useFirebaseUser'
+import { useRouter } from 'next/router'
 
 // ** Styled Components
 const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
@@ -116,10 +112,16 @@ interface FormData {
 }
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const address = useAddress()
+  const connectWithMetamask = useMetamask()
+  const sdk = useSDK()
+  const { user } = useFirebaseUser()
+  const router = useRouter()
 
   // ** Hooks
-  const auth = useAuth()
+  // const auth = useAuth()
+  const { auth } = initializeFirebaseClient()
+
   const theme = useTheme()
   const bgClasses = useBgColor()
   const { settings } = useSettings()
@@ -141,12 +143,38 @@ const LoginPage = () => {
 
   const onSubmit = (data: FormData) => {
     const { email, password } = data
+    console.log('login')
     auth.login({ email, password }, () => {
       setError('email', {
         type: 'manual',
         message: 'Email or Password is invalid'
       })
     })
+  }
+
+  async function signIn() {
+    // Use the same address as the one specified in _app.tsx.
+    const payload = await sdk?.auth.login('regidrop.vercel.app')
+
+    // Make a request to the API with the payload.
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ payload })
+    })
+
+    const { token } = await res.json()
+    signInWithCustomToken(auth, token)
+      .then((userCredential: { user: any }) => {
+        const returnUrl = router.query.returnUrl
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+        router.replace(redirectURL as string)
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
   const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
@@ -271,108 +299,28 @@ const LoginPage = () => {
               </Typography>
             </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
-              <FormControl fullWidth sx={{ mb: 4 }}>
-                <Controller
-                  name='email'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange, onBlur } }) => (
-                    <TextField
-                      autoFocus
-                      label='Email'
-                      value={value}
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      error={Boolean(errors.email)}
-                      placeholder='admin@materio.com'
-                    />
-                  )}
-                />
-                {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel htmlFor='auth-login-v2-password' error={Boolean(errors.password)}>
-                  Password
-                </InputLabel>
-                <Controller
-                  name='password'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange, onBlur } }) => (
-                    <OutlinedInput
-                      value={value}
-                      onBlur={onBlur}
-                      label='Password'
-                      onChange={onChange}
-                      id='auth-login-v2-password'
-                      error={Boolean(errors.password)}
-                      type={showPassword ? 'text' : 'password'}
-                      endAdornment={
-                        <InputAdornment position='end'>
-                          <IconButton
-                            edge='end'
-                            onMouseDown={e => e.preventDefault()}
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? <EyeOutline /> : <EyeOffOutline />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  )}
-                />
-                {errors.password && (
-                  <FormHelperText sx={{ color: 'error.main' }} id=''>
-                    {errors.password.message}
-                  </FormHelperText>
-                )}
-              </FormControl>
               <Box
                 sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
               >
                 <FormControlLabel control={<Checkbox />} label='Remember Me' />
-                <Link passHref href='/forgot-password'>
-                  <LinkStyled>Forgot Password?</LinkStyled>
-                </Link>
               </Box>
-              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
-                Login
-              </Button>
-              <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography variant='body2' sx={{ mr: 2 }}>
-                  New on our platform?
-                </Typography>
-                <Typography variant='body2'>
-                  <Link passHref href='/register'>
-                    <LinkStyled>Create an account</LinkStyled>
-                  </Link>
-                </Typography>
-              </Box>
+              {user ? (
+                <Button onClick={() => signOut(auth)} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
+                  Sign Out
+                </Button>
+              ) : (
+                <Button onClick={() => signIn()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
+                  Login
+                </Button>
+              )}
+              {address ? (
+                <>address:{address}</>
+              ) : (
+                <Button onClick={() => connectWithMetamask()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
+                  Connect Wallet
+                </Button>
+              )}
               <Divider sx={{ my: 5 }}>or</Divider>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link href='/' passHref>
-                  <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                    <Facebook sx={{ color: '#497ce2' }} />
-                  </IconButton>
-                </Link>
-                <Link href='/' passHref>
-                  <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                    <Twitter sx={{ color: '#1da1f2' }} />
-                  </IconButton>
-                </Link>
-                <Link href='/' passHref>
-                  <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                    <Github
-                      sx={{ color: theme => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
-                    />
-                  </IconButton>
-                </Link>
-                <Link href='/' passHref>
-                  <IconButton component='a' onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                    <Google sx={{ color: '#db4437' }} />
-                  </IconButton>
-                </Link>
-              </Box>
             </form>
           </BoxWrapper>
         </Box>

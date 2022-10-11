@@ -7,9 +7,10 @@ import { Router } from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
+import { ChainId, ThirdwebProvider } from '@thirdweb-dev/react'
 
-
-
+// This is the chainId your dApp will work on.
+const activeChainId = ChainId.Goerli
 
 // ** Loader Import
 import NProgress from 'nprogress'
@@ -115,18 +116,32 @@ const App = (props: ExtendedAppProps) => {
   const aclAbilities = Component.acl ?? defaultACLObj
 
   return (
-    
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
-          <meta
-            name='description'
-            content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-          />
-          <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
-          <meta name='viewport' content='initial-scale=1, width=device-width' />
-        </Head>
+    <CacheProvider value={emotionCache}>
+      <Head>
+        <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
+        <meta
+          name='description'
+          content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
+        />
+        <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
+        <meta name='viewport' content='initial-scale=1, width=device-width' />
+      </Head>
 
+      <ThirdwebProvider
+        desiredChainId={activeChainId}
+        sdkOptions={{
+          gasless: {
+            openzeppelin: {
+              relayerUrl: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL || ''
+            }
+          }
+        }}
+        authConfig={{
+          domain: 'regidrop.vercel.app',
+          authUrl: '/api/auth',
+          loginRedirect: '/'
+        }}
+      >
         <AuthProvider>
           <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
             <SettingsConsumer>
@@ -134,11 +149,11 @@ const App = (props: ExtendedAppProps) => {
                 return (
                   <ThemeComponent settings={settings}>
                     <WindowWrapper>
-                      <Guard authGuard={authGuard} guestGuard={guestGuard}>
-                        <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}>
-                          {getLayout(<Component {...pageProps} />)}
-                        </AclGuard>
-                      </Guard>
+                      {/* <Guard authGuard={authGuard} guestGuard={guestGuard}> */}
+                      {/* <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}> */}
+                      {getLayout(<Component {...pageProps} />)}
+                      {/* </AclGuard> */}
+                      {/* </Guard> */}
                     </WindowWrapper>
                     <ReactHotToast>
                       <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
@@ -149,8 +164,8 @@ const App = (props: ExtendedAppProps) => {
             </SettingsConsumer>
           </SettingsProvider>
         </AuthProvider>
-      </CacheProvider>
-   
+      </ThirdwebProvider>
+    </CacheProvider>
   )
 }
 
