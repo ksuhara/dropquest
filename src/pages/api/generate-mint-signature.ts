@@ -1,0 +1,46 @@
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { firestore } from 'firebase-admin'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
+
+export default async function generateMintSignature(req: NextApiRequest, res: NextApiResponse) {
+  const { minterAddress, contractAddress, keyString } = JSON.parse(req.body)
+
+  const { db } = initializeFirebaseServer()
+
+  const docRef = db.collection('contracts').doc(contractAddress)
+  const doc = await docRef.get()
+  if (!doc.exists) {
+    res.status(400).json({
+      message: 'No such contract'
+    })
+  }
+  const keys = doc.data()!.keys
+  const index = keys.findIndex((element: any) => element.key == keyString)
+  const key = keys[index]
+  keys[index] = {
+    key: keyString,
+    isUsed: true,
+    minter: minterAddress
+    // updatedAt: firestore.FieldValue.serverTimestamp()
+  }
+
+  const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, 'goerli')
+  const signatureDrop = goerliSDK.getSignatureDrop(contractAddress)
+
+  if (!key.isUsed) {
+    const mintSignature = await (
+      await signatureDrop
+    ).signature.generate({
+      to: minterAddress, // Can only be minted by the address we checked earlier
+      price: '0', // Free!
+      mintStartTime: new Date(0) // now
+    })
+    docRef.update({ keys })
+    res.status(200).json(mintSignature)
+  } else {
+    res.status(400).json({
+      message: 'key is already used'
+    })
+  }
+}

@@ -1,4 +1,4 @@
-import { doc, DocumentData, onSnapshot } from 'firebase/firestore'
+import { doc, DocumentData, onSnapshot, query, collection, where } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import initializeFirebaseClient from '../configs/initFirebase'
 import useFirebaseUser from './useFirebaseUser'
@@ -9,6 +9,7 @@ export default function useFirebaseDocument() {
   const { user, isLoading: loadingUser } = useFirebaseUser()
   const [isLoading, setIsLoading] = useState(true)
   const [document, setDocument] = useState<DocumentData | null>(null)
+  const [contractsDocument, setContractsDocument] = useState<DocumentData[] | null>(null)
 
   useEffect(() => {
     if (!loadingUser && user && db) {
@@ -21,14 +22,24 @@ export default function useFirebaseDocument() {
               id: doc.id
             })
           } else {
-            console.log('hey', doc)
             setDocument(null)
           }
           setIsLoading(false)
         })
 
+        const q = query(collection(db, 'contracts'), where('owner', '==', user.uid))
+        const contractListner = onSnapshot(q, async querySnapshot => {
+          const a: any = []
+          querySnapshot.forEach(doc => {
+            a.push(doc.data())
+          })
+          setContractsDocument(a)
+          setIsLoading(false)
+        })
+
         return () => {
           listener()
+          contractListner()
         }
       })()
     } else {
@@ -36,5 +47,5 @@ export default function useFirebaseDocument() {
     }
   }, [db, user, loadingUser])
 
-  return { isLoading, document }
+  return { isLoading, document, contractsDocument }
 }

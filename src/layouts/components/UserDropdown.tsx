@@ -29,6 +29,7 @@ import { signOut } from 'firebase/auth'
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
 import initializeFirebaseClient from 'src/configs/initFirebase'
+import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
 interface Props {
   settings: Settings
@@ -53,6 +54,7 @@ const UserDropdown = (props: Props) => {
   // ** Hooks
   const router = useRouter()
   const { auth } = initializeFirebaseClient()
+  const { user } = useFirebaseUser()
 
   // ** Vars
   const { direction } = settings
@@ -141,10 +143,10 @@ const UserDropdown = (props: Props) => {
                 flexDirection: 'column'
               }}
             >
-              <Typography sx={{ fontWeight: 600 }}>John Doe</Typography>
-              <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
+              <Typography sx={{ fontWeight: 600 }}>{user?.uid}</Typography>
+              {/* <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Admin
-              </Typography>
+              </Typography> */}
             </Box>
           </Box>
         </Box>
