@@ -1,22 +1,13 @@
-import {
-  useAddress,
-  useMetamask,
-  useSignatureDrop,
-  useNetwork,
-  useNetworkMismatch,
-  useEditionDrop,
-  useSDK
-} from '@thirdweb-dev/react'
+import { useAddress, useMetamask, useSignatureDrop, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
 
 import type { NextPage } from 'next'
-import Image from 'next/image'
 
 import { ChainId, SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk'
 import { useRouter } from 'next/router'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { useEffect, useState } from 'react'
-import { Container, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 
 const Mint: NextPage = () => {
   const router = useRouter()
@@ -34,9 +25,11 @@ const Mint: NextPage = () => {
   useEffect(() => {
     const fetchMetadata = async () => {
       if (!signatureDrop) return
-      const fetchedMetadata = await signatureDrop?.metadata.get()
-      console.log(fetchedMetadata)
-      setMetadata(fetchedMetadata)
+
+      const unclaimed = await signatureDrop.getAllUnclaimed()
+      console.log(3)
+      console.log(unclaimed, 'unclaimed')
+      setMetadata(unclaimed[0])
     }
     fetchMetadata()
   }, [signatureDrop])
@@ -63,8 +56,6 @@ const Mint: NextPage = () => {
       })
     })
 
-    console.log(signedPayloadReq)
-
     if (signedPayloadReq.status === 400) {
       alert("Looks like you don't own an early access NFT :( You don't qualify for the free mint.")
 
@@ -86,8 +77,8 @@ const Mint: NextPage = () => {
     <Box>
       {address ? (
         <Box sx={{ mr: 2, justifyItems: 'center' }}>
-          <Box>{metadata && <img src={metadata.image} alt='nftimage' width={300} height={300} />}</Box>
-          <Typography>{metadata.name}</Typography>
+          <Box>{metadata?.image && <img src={metadata.image} alt='nftimage' width={300} height={300} />}</Box>
+          {metadata?.name && <Typography>{metadata.name}</Typography>}
           <Button onClick={() => claimWithSignature()} variant='contained' size='large'>
             claimWithSignature
           </Button>

@@ -15,7 +15,10 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
       message: 'No such contract'
     })
   }
+  console.log(1)
+  console.log(keyString, 'keyString')
   const keys = doc.data()!.keys
+  console.log(keys)
   const index = keys.findIndex((element: any) => element.key == keyString)
   const key = keys[index]
   keys[index] = {
@@ -25,9 +28,11 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
     // updatedAt: firestore.FieldValue.serverTimestamp()
   }
 
+  console.log(2)
   const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, 'goerli')
   const signatureDrop = goerliSDK.getSignatureDrop(contractAddress)
-
+  console.log(3)
+  console.log(key)
   if (!key.isUsed) {
     const mintSignature = await (
       await signatureDrop
