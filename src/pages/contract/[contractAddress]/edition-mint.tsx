@@ -1,8 +1,8 @@
-import { useAddress, useMetamask, useSignatureDrop, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
+import { useAddress, useMetamask, useContract, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
 
 import type { NextPage } from 'next'
 
-import { ChainId, SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk'
+import { ChainId, SignedPayload1155 } from '@thirdweb-dev/sdk'
 import { useRouter } from 'next/router'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import Skeleton from '@mui/material/Skeleton'
 
 const Mint: NextPage = () => {
   const router = useRouter()
@@ -20,21 +21,19 @@ const Mint: NextPage = () => {
   const isMismatch = useNetworkMismatch()
   const [, switchNetwork] = useNetwork()
 
-  const signatureDrop = useSignatureDrop(contractAddress as string)
+  const edition = useContract(contractAddress as string, 'edition')
 
   const [metadata, setMetadata] = useState<any>()
 
   useEffect(() => {
     const fetchMetadata = async () => {
-      if (!signatureDrop) return
+      if (!edition || metadata) return
 
-      const unclaimed = await signatureDrop.getAllUnclaimed()
-      console.log(3)
-      console.log(unclaimed, 'unclaimed')
-      setMetadata(unclaimed[0])
+      const unclaimed = await edition.contract?.getAll()
+      setMetadata(unclaimed ? unclaimed[0].metadata : undefined)
     }
     fetchMetadata()
-  }, [signatureDrop])
+  }, [edition])
 
   async function claimWithSignature() {
     if (!address) {
@@ -64,9 +63,9 @@ const Mint: NextPage = () => {
       return
     } else {
       try {
-        const signedPayload = (await signedPayloadReq.json()) as SignedPayload721WithQuantitySignature
+        const signedPayload = (await signedPayloadReq.json()) as SignedPayload1155
 
-        const tx = await signatureDrop?.signature.mint(signedPayload)
+        const tx = await edition.contract?.signature.mint(signedPayload)
 
         alert(`Succesfully minted NFT!`)
       } catch (error: any) {
@@ -78,7 +77,13 @@ const Mint: NextPage = () => {
   return (
     <Card sx={{ textAlign: 'center', maxWidth: 800, mx: 'auto' }}>
       <CardContent>
-        <Box>{metadata?.image && <img src={metadata.image} alt='nftimage' width={300} height={300} />}</Box>
+        <Box>
+          {metadata?.image ? (
+            <img src={metadata.image} alt='nftimage' width={300} height={300} />
+          ) : (
+            <Skeleton variant='rectangular' width={300} height={300} sx={{ mx: 'auto' }} />
+          )}
+        </Box>
         {metadata?.name && (
           <Typography variant='h6' component={'p'}>
             Token name: {metadata.name}

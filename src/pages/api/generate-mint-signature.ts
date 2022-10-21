@@ -15,34 +15,44 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
       message: 'No such contract'
     })
   }
-  console.log(1)
-  console.log(keyString, 'keyString')
   const keys = doc.data()!.keys
-  console.log(keys)
   const index = keys.findIndex((element: any) => element.key == keyString)
   const key = keys[index]
   keys[index] = {
     key: keyString,
     isUsed: true,
     minter: minterAddress
+
     // updatedAt: firestore.FieldValue.serverTimestamp()
   }
 
   console.log(2)
   const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, 'goerli')
-  const signatureDrop = goerliSDK.getSignatureDrop(contractAddress)
-  console.log(3)
-  console.log(key)
+
+  const type = doc.data()!.contractType
   if (!key.isUsed) {
-    const mintSignature = await (
-      await signatureDrop
-    ).signature.generate({
-      to: minterAddress, // Can only be minted by the address we checked earlier
-      price: '0', // Free!
-      mintStartTime: new Date(0) // now
-    })
-    docRef.update({ keys })
-    res.status(200).json(mintSignature)
+    if (type == 'signature-drop') {
+      const signatureDrop = goerliSDK.getSignatureDrop(contractAddress)
+
+      const mintSignature = await (
+        await signatureDrop
+      ).signature.generate({
+        to: minterAddress, // Can only be minted by the address we checked earlier
+        price: '0', // Free!
+        mintStartTime: new Date(0) // now
+      })
+      docRef.update({ keys })
+      res.status(200).json(mintSignature)
+    } else if (type == 'edition') {
+      const edition = await goerliSDK.getContract(contractAddress, 'edition')
+      const mintSignature = await edition.signature.generateFromTokenId({
+        tokenId: 1,
+        quantity: 1,
+        to: minterAddress
+      })
+      docRef.update({ keys })
+      res.status(200).json(mintSignature)
+    }
   } else {
     res.status(400).json({
       message: 'key is already used'

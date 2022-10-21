@@ -14,6 +14,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseDocument from 'src/hooks/useFirebaseUserDocument'
 import { ConsoleNetworkOutline } from 'mdi-material-ui'
+import Box from '@mui/material/Box'
 
 const Home = () => {
   const address = useAddress()
@@ -33,18 +34,20 @@ const Home = () => {
 
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Card>
           <CardHeader title='Kick start your project 🚀'></CardHeader>
           <CardContent>
-            <Typography sx={{ mb: 2 }}>Add contract address</Typography>
-            <TextField label='ContractAddress' onChange={e => setNFTAddress(e.target.value)} />
-            <Button onClick={registerNFT} variant='contained' size='large'>
+            <Typography sx={{ mb: 2 }}>
+              Register your contract to this dashboard. The contract must be "SignatureDrop" or "Edition" of Thirdweb.
+            </Typography>
+            <TextField label='ContractAddress' onChange={e => setNFTAddress(e.target.value)} sx={{ width: 360 }} />
+            <Button onClick={registerNFT} variant='contained' size='large' sx={{ ml: 4 }}>
               Register NFT
             </Button>
           </CardContent>
         </Card>
-      </Grid>
+      </Grid> */}
       {contractsDocument?.map(contract => {
         return (
           <Grid item xs={12} key={contract.contractAddress}>

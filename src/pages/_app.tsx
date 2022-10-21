@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
 // ** Next Imports
 import Head from 'next/head'
@@ -8,9 +8,6 @@ import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
 import { ChainId, ThirdwebProvider } from '@thirdweb-dev/react'
-
-// This is the chainId your dApp will work on.
-const activeChainId = ChainId.Goerli
 
 // ** Loader Import
 import NProgress from 'nprogress'
@@ -59,6 +56,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 
 // ** Global css styles
 import '../../styles/globals.css'
+import ChainContext from 'src/context/Chain'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -101,6 +99,8 @@ const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
 const App = (props: ExtendedAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
+  const [selectedChain, setSelectedChain] = useState(ChainId.Goerli)
+
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
@@ -123,45 +123,46 @@ const App = (props: ExtendedAppProps) => {
         <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
-
-      <ThirdwebProvider
-        desiredChainId={activeChainId}
-        sdkOptions={{
-          gasless: {
-            openzeppelin: {
-              relayerUrl: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL || ''
+      <ChainContext.Provider value={{ selectedChain, setSelectedChain }}>
+        <ThirdwebProvider
+          desiredChainId={selectedChain}
+          sdkOptions={{
+            gasless: {
+              openzeppelin: {
+                relayerUrl: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL || ''
+              }
             }
-          }
-        }}
-        authConfig={{
-          domain: 'regidrop.vercel.app',
-          authUrl: '/api/auth',
-          loginRedirect: '/'
-        }}
-      >
-        <AuthProvider>
-          <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
-            <SettingsConsumer>
-              {({ settings }) => {
-                return (
-                  <ThemeComponent settings={settings}>
-                    <WindowWrapper>
-                      {/* <Guard authGuard={authGuard} guestGuard={guestGuard}> */}
-                      {/* <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}> */}
-                      {getLayout(<Component {...pageProps} />)}
-                      {/* </AclGuard> */}
-                      {/* </Guard> */}
-                    </WindowWrapper>
-                    <ReactHotToast>
-                      <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
-                    </ReactHotToast>
-                  </ThemeComponent>
-                )
-              }}
-            </SettingsConsumer>
-          </SettingsProvider>
-        </AuthProvider>
-      </ThirdwebProvider>
+          }}
+          authConfig={{
+            domain: 'regidrop.vercel.app',
+            authUrl: '/api/auth',
+            loginRedirect: '/'
+          }}
+        >
+          <AuthProvider>
+            <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
+              <SettingsConsumer>
+                {({ settings }) => {
+                  return (
+                    <ThemeComponent settings={settings}>
+                      <WindowWrapper>
+                        {/* <Guard authGuard={authGuard} guestGuard={guestGuard}> */}
+                        {/* <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}> */}
+                        {getLayout(<Component {...pageProps} />)}
+                        {/* </AclGuard> */}
+                        {/* </Guard> */}
+                      </WindowWrapper>
+                      <ReactHotToast>
+                        <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
+                      </ReactHotToast>
+                    </ThemeComponent>
+                  )
+                }}
+              </SettingsConsumer>
+            </SettingsProvider>
+          </AuthProvider>
+        </ThirdwebProvider>
+      </ChainContext.Provider>
     </CacheProvider>
   )
 }

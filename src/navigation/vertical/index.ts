@@ -1,6 +1,6 @@
 // ** Icon imports
 import HomeOutline from 'mdi-material-ui/HomeOutline'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
+import Upload from 'mdi-material-ui/Upload'
 import ShieldOutline from 'mdi-material-ui/ShieldOutline'
 
 // ** Type import
@@ -14,8 +14,8 @@ const navigation = (): VerticalNavItemsType => {
       path: '/home'
     },
     {
-      title: 'Second Page',
-      icon: EmailOutline,
+      title: 'Create Contract',
+      icon: Upload,
       path: '/second-page'
     }
   ]

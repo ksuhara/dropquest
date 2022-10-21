@@ -8,23 +8,28 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
   const { nftAddress, address } = JSON.parse(req.body)
   const { db } = initializeFirebaseServer()
 
+  const docRef = db.collection('contracts').doc(nftAddress)
+  const data = await docRef.get()
+  if (data.exists) {
+    return res.status(400).send({ error: 'already registered' })
+  }
   const sdk = new ThirdwebSDK('goerli')
-  const nftCollection = await sdk.getNFTCollection(nftAddress)
+  const nftCollection = await sdk.getContract(nftAddress)
   const contractOwner = await nftCollection.owner.get()
   const contractMetadata = await nftCollection.metadata.get()
-  console.log(contractMetadata)
+  const minters = await nftCollection.roles.get('minter')
   if (contractOwner != address) {
-    res.status(400).json({
-      message: 'not an owner'
-    })
+    return res.status(400).send({ error: 'not an owner' })
+  }
+  if (!minters.includes('0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC')) {
+    return res.status(400).send({ error: 'please add 0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC to minter' })
   }
 
-  const docRef = db.collection('contracts').doc(nftAddress)
-
+  // リファラルがあれば数字変える
   const keys = []
   for (let i = 0; i < 30; i++) {
     const rand = randomstring.generate({
-      length: 12,
+      length: 16,
       charset: 'alphanumeric',
       capitalization: 'lowercase'
     })
@@ -40,7 +45,8 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
       contractAddress: nftAddress,
       owner: address,
       keys: keys,
-      createdAt: firestore.FieldValue.serverTimestamp()
+      createdAt: firestore.FieldValue.serverTimestamp(),
+      contractType: 'edition'
     },
     { merge: true }
   )

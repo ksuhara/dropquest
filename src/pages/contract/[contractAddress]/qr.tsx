@@ -13,6 +13,7 @@ import { useQRCode } from 'next-qrcode'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 
 const ContractQR = () => {
   const router = useRouter()
@@ -56,48 +57,60 @@ const ContractQR = () => {
       })
     }
     syncData()
+    console.log(contractData)
   }, [contractAddress])
 
   return (
-    <>
+    <Grid container spacing={4}>
       {contractData && user?.uid == contractData.owner && !isLoading ? (
         <>
-          <h1>{contractData.name}</h1>
-          <h3>{contractAddress}</h3>
-
-          <Card sx={{ maxWidth: 345 }}>
-            <CardContent>
-              <Canvas
-                text={`${basePath}/contract/${contractAddress}/mint?key=${qrKey}`}
-                options={{
-                  type: 'image/jpeg',
-                  quality: 0.3,
-                  level: 'M',
-                  margin: 3,
-                  scale: 4,
-                  width: 300,
-                  color: {
-                    dark: '#9155FD',
-                    light: '#FFF'
-                  }
-                }}
-              />
-              <Box marginRight={2}>
-                {basePath && (
-                  <a href={`${basePath}/contract/${contractAddress}/mint?key=${qrKey}`}>
-                    <Typography
-                      sx={{ fontSize: 8, mx: 4 }}
-                    >{`${basePath}/contract/${contractAddress}/mint?key=${qrKey}`}</Typography>
-                  </a>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ mx: 'auto' }}>
+              <CardContent>
+                <img src={contractData.image} width={'100%'}></img>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ mx: 'auto', minHeight: '100%' }}>
+              <CardContent>
+                <Typography variant='h2'>{contractData.name}</Typography>
+                <Typography variant='subtitle2'>{contractAddress}</Typography>
+                <Typography variant='subtitle2'>created by:{contractAddress}</Typography>
+                <Canvas
+                  text={`${basePath}/contract/${contractAddress}/mint?key=${qrKey}`}
+                  options={{
+                    type: 'image/jpeg',
+                    quality: 0.3,
+                    level: 'M',
+                    margin: 3,
+                    scale: 4,
+                    width: 360,
+                    color: {
+                      dark: '#9155FD',
+                      light: '#FFF'
+                    }
+                  }}
+                />
+                <Box>
+                  {basePath && (
+                    <Button
+                      variant='contained'
+                      href={`${basePath}/contract/${contractAddress}/edition-mint?key=${qrKey}`}
+                      target={'_blank'}
+                    >
+                      test
+                    </Button>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </>
       ) : (
         <>Contract Owner can </>
       )}
-    </>
+    </Grid>
   )
 }
 

@@ -1,12 +1,20 @@
 import Button from '@mui/material/Button'
-import { useAddress, useContract, useUnclaimedNFTSupply, useClaimedNFTSupply } from '@thirdweb-dev/react'
+import {
+  useAddress,
+  useContract,
+  useUnclaimedNFTSupply,
+  useClaimedNFTSupply,
+  useSDK,
+  useNFTs,
+  ThirdwebNftMedia
+} from '@thirdweb-dev/react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import { getDoc, doc } from 'firebase/firestore'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
+import Box, { BoxProps } from '@mui/material/Box'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
@@ -21,19 +29,40 @@ import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 import { useTheme } from '@mui/material'
 import { ApexOptions } from 'apexcharts'
 import Plus from 'mdi-material-ui/Plus'
+import Link from '@mui/material/Link'
+import InputLabel from '@mui/material/InputLabel'
+import { styled } from '@mui/material/styles'
+import Modal from '@mui/material/Modal'
+import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
 
-const ContractAdmin = () => {
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  minWidth: 400,
+  p: 4
+}
+
+const EditionAdmin = () => {
   const router = useRouter()
   const { contractAddress } = router.query
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
   const theme = useTheme()
+  const sdk = useSDK()
   const contractQuery = useContract(contractAddress as string)
-  const { data: ClaimedSupply } = useClaimedNFTSupply(contractQuery.contract)
-  const { data: unclaimedSupply } = useUnclaimedNFTSupply(contractQuery.contract)
+  const edition = useContract(contractAddress as string, 'edition')
+
+  const { data: nfts } = useNFTs(contractQuery.contract)
 
   const [contractData, setContractData] = useState<any>()
   const [keys, setKeys] = useState<Key[]>([])
+  const [rows, setRows] = useState<GridRowsProp>([])
+
+  const [open, setOpen] = useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
   const options: ApexOptions = {
     chart: {
@@ -97,6 +126,33 @@ const ContractAdmin = () => {
     router.push(response.checkout_url)
   }
 
+  const OptionsWrapper = styled(Box)<BoxProps>(() => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  }))
+
+  const Img = styled('img')(({ theme }) => ({
+    width: 40,
+    height: 40
+  }))
+
+  const columns: GridColumns = [
+    { field: 'id', headerName: 'ID', width: 80, editable: false },
+    {
+      field: 'image',
+      headerName: 'image',
+      width: 100,
+      renderCell: params => (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Img src={params.value} />
+        </Box>
+      )
+    },
+    { field: 'name', headerName: 'Name', editable: false },
+    { field: 'supply', headerName: 'supply', type: 'number', width: 100, editable: false }
+  ]
+
   useEffect(() => {
     const syncData = async () => {
       if (!contractAddress) return
@@ -110,6 +166,25 @@ const ContractAdmin = () => {
     syncData()
   }, [contractAddress])
 
+  useEffect(() => {
+    const syncNfts = async () => {
+      console.log(rows)
+      const newRows = nfts?.map(nft => {
+        console.log(nft.metadata)
+
+        return {
+          id: nft.metadata.id,
+          supply: nft.supply,
+          name: nft.metadata.name,
+          image: nft.metadata.image
+        }
+      })
+      if (!newRows) return
+      setRows(newRows)
+    }
+    syncNfts()
+  }, [nfts])
+
   return (
     <>
       {contractData && user?.uid == contractData.owner ? (
@@ -120,12 +195,17 @@ const ContractAdmin = () => {
               <Typography variant='subtitle1'>{contractAddress}</Typography>
             </Grid>
             <Grid item sx={{ mr: 4, my: 4 }}>
-              <Button href={`/contract/${contractAddress}/qr`} variant='contained' size='large'>
+              <Button
+                href={`/contract/${contractAddress}/qr`}
+                variant='contained'
+                size='large'
+                disabled={keys.length == 0}
+              >
                 qrコード表示
               </Button>
             </Grid>
           </Grid>
-          <Grid container>
+          <Grid container spacing={4}>
             <Grid item xs={12} md={8}>
               <Card>
                 <CardHeader
@@ -149,63 +229,107 @@ const ContractAdmin = () => {
                     }
                   }}
                 >
-                  <Grid container sx={{ my: [0, 4, 7.375] }}>
+                  <Grid container sx={{ my: [0, 4] }}>
                     <Grid item xs={12} sm={6} sx={{ mb: [3, 0] }}>
                       <ReactApexcharts
                         type='donut'
-                        height={220}
+                        height={120}
                         series={[contractData.keys.length - keys.length, keys.length]}
                         options={options}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ my: 'auto' }}>
                       <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
-                        {/* <CustomAvatar skin='light' sx={{ mr: 3 }} variant='rounded'>
-                          <CurrencyUsd sx={{ color: 'primary.main' }} />
-                        </CustomAvatar> */}
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Typography variant='body2'>Number of Tickets</Typography>
                           <Typography variant='h6'>
                             {keys.length}/{contractData.keys.length}
                           </Typography>
                         </Box>
-                        <Button onClick={payment} variant='contained' size='large' sx={{ ml: 4 }} startIcon={<Plus />}>
+                        <Button
+                          onClick={handleOpen}
+                          variant='contained'
+                          size='large'
+                          sx={{ ml: 4 }}
+                          startIcon={<Plus />}
+                        >
                           購入
                         </Button>
+                        <Modal
+                          open={open}
+                          onClose={handleClose}
+                          aria-labelledby='modal-modal-title'
+                          aria-describedby='modal-modal-description'
+                        >
+                          <Card sx={style}>
+                            <Typography variant='h6' component='h2'>
+                              Add Tickets
+                            </Typography>
+                            <Typography sx={{ mt: 2 }}>100 tickets for $5</Typography>
+                            <Button onClick={payment} variant='contained' size='large' sx={{ ml: 4 }}>
+                              Checkout
+                            </Button>
+                          </Card>
+                        </Modal>
                       </Box>
-                      <Divider sx={{ my: 4 }} />
-                      <Grid container>
-                        <Grid item xs={6} sx={{ mb: 4 }}>
-                          <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <Circle sx={{ mr: 1.5, fontSize: '0.75rem', color: 'primary.main' }} />
-                            <Typography variant='body2'>Claimed Supply</Typography>
-                          </Box>
-                          <Typography sx={{ fontWeight: 600 }}>{ClaimedSupply?.toString()}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sx={{ mb: 4 }}>
-                          <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
-                            <Circle
-                              sx={{ mr: 1.5, fontSize: '0.75rem', color: hexToRGBA(theme.palette.primary.main, 0.7) }}
-                            />
-                            <Typography variant='body2'>Unclaimed Supply</Typography>
-                          </Box>
-                          <Typography sx={{ fontWeight: 600 }}>{unclaimedSupply?.toString()}</Typography>
-                        </Grid>
-                      </Grid>
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
-          </Grid>
-          <Box marginTop={8}>
-            <Typography variant='h4'>Customize gates</Typography>
 
-            <FormGroup>
-              <FormControlLabel control={<Switch defaultChecked />} label='Label' />
-              <FormControlLabel disabled control={<Switch />} label='Disabled' />
-            </FormGroup>
-          </Box>
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardHeader
+                  title='Token List'
+                  titleTypographyProps={{
+                    sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+                  }}
+                ></CardHeader>
+                <CardContent>
+                  <Button
+                    variant='contained'
+                    href={`https://thirdweb.com/goerli/${contractAddress}/nfts`}
+                    target={'_blank'}
+                  >
+                    Edit on Thirdweb
+                  </Button>
+                  {rows.length ? (
+                    <DataGrid autoHeight rows={rows} columns={columns} experimentalFeatures={{ newEditingApi: true }} />
+                  ) : (
+                    <p>loading</p>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardHeader
+                  title='Customize Gates'
+                  titleTypographyProps={{
+                    sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+                  }}
+                />
+                <CardContent>
+                  <FormGroup>
+                    <OptionsWrapper sx={{ mb: 1 }}>
+                      <InputLabel htmlFor='invoice-add-client-notes' sx={{ cursor: 'pointer', fontSize: '1rem' }}>
+                        Twitter Follow Gate
+                      </InputLabel>
+                      <Switch id='invoice-add-client-notes' disabled />
+                    </OptionsWrapper>
+                    <OptionsWrapper>
+                      <InputLabel htmlFor='invoice-add-payment-stub' sx={{ cursor: 'pointer', fontSize: '1rem' }}>
+                        NFT Holder Gate
+                      </InputLabel>
+                      <Switch id='invoice-add-payment-stub' disabled />
+                    </OptionsWrapper>
+                  </FormGroup>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </>
       ) : (
         <>Contract Owner can </>
@@ -214,4 +338,4 @@ const ContractAdmin = () => {
   )
 }
 
-export default ContractAdmin
+export default EditionAdmin

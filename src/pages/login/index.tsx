@@ -290,37 +290,36 @@ const LoginPage = () => {
               <TypographyStyled variant='h5'>Welcome to {themeConfig.templateName}! 👋🏻</TypographyStyled>
               <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
             </Box>
-            <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Admin: <strong>admin@materio.com</strong> / Pass: <strong>admin</strong>
-              </Typography>
-              <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                Client: <strong>client@materio.com</strong> / Pass: <strong>client</strong>
-              </Typography>
-            </Alert>
+
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
-              <Box
+              {/* <Box
                 sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
               >
                 <FormControlLabel control={<Checkbox />} label='Remember Me' />
-              </Box>
-              {user ? (
-                <Button onClick={() => signOut(auth)} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
-                  Sign Out
-                </Button>
-              ) : (
-                <Button onClick={() => signIn()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
-                  Login
-                </Button>
-              )}
+              </Box> */}
               {address ? (
-                <>address:{address}</>
+                <>
+                  {user ? (
+                    <Button onClick={() => signOut(auth)} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
+                      Sign Out
+                    </Button>
+                  ) : (
+                    <Button onClick={() => signIn()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
+                      Sign In
+                    </Button>
+                  )}
+                  <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
+                    <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
+                      Address: {address}
+                    </Typography>
+                  </Alert>
+                </>
               ) : (
                 <Button onClick={() => connectWithMetamask()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
                   Connect Wallet
                 </Button>
               )}
-              <Divider sx={{ my: 5 }}>or</Divider>
+              {/* <Divider sx={{ my: 5 }}>or</Divider> */}
             </form>
           </BoxWrapper>
         </Box>
