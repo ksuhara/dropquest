@@ -1,6 +1,5 @@
 // ** Next Import
 import dynamic from 'next/dynamic'
-
 // ** Types
 import { EditorProps } from 'react-draft-wysiwyg'
 

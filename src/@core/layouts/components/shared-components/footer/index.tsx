@@ -1,10 +1,8 @@
 // ** React Imports
-import { ReactNode } from 'react'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
-
+import { ReactNode } from 'react'
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
 

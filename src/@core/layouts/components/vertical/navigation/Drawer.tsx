@@ -1,10 +1,8 @@
 // ** React Imports
-import { ReactNode } from 'react'
-
 // ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
 import MuiSwipeableDrawer, { SwipeableDrawerProps } from '@mui/material/SwipeableDrawer'
-
+import { ReactNode } from 'react'
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
 

@@ -1,8 +1,9 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import type { NextApiRequest, NextApiResponse } from 'next/types'
-import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
-import randomstring from 'randomstring'
 import { firestore } from 'firebase-admin'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
+import randomstring from 'randomstring'
+
+import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
 export default async function registerNFTContract(req: NextApiRequest, res: NextApiResponse) {
   const { nftAddress, address } = JSON.parse(req.body)

@@ -1,17 +1,13 @@
 // ** React Imports
-import { ReactNode } from 'react'
-
-// ** Next Import
-import Link from 'next/link'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { styled, useTheme } from '@mui/material/styles'
-
+import Typography from '@mui/material/Typography'
+// ** Next Import
+import Link from 'next/link'
+import { ReactNode } from 'react'
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
-
 // ** Theme Config Import
 import themeConfig from 'src/configs/themeConfig'
 

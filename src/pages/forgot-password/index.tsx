@@ -1,29 +1,22 @@
 // ** React Imports
-import { ReactNode, SyntheticEvent } from 'react'
-
-// ** Next Imports
-import Link from 'next/link'
-
+import Box, { BoxProps } from '@mui/material/Box'
 // ** MUI Components
 import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import Box, { BoxProps } from '@mui/material/Box'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { styled, useTheme } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-
+import useMediaQuery from '@mui/material/useMediaQuery'
 // ** Icons Imports
 import ChevronLeft from 'mdi-material-ui/ChevronLeft'
-
-// ** Configs
-import themeConfig from 'src/configs/themeConfig'
-
-// ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
-
+// ** Next Imports
+import Link from 'next/link'
+import { ReactNode, SyntheticEvent } from 'react'
 // ** Hooks
 import { useSettings } from 'src/@core/hooks/useSettings'
-
+// ** Layout Import
+import BlankLayout from 'src/@core/layouts/BlankLayout'
+// ** Configs
+import themeConfig from 'src/configs/themeConfig'
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
 

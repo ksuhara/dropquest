@@ -1,6 +1,5 @@
 // ** MUI Imports
 import { Theme } from '@mui/material/styles'
-
 // ** Util Imports
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 

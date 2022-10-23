@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // ** React Imports
 import { ReactNode, useContext } from 'react'
-
-// ** Component Imports
-import { AbilityContext } from 'src/layouts/components/acl/Can'
-
 // ** Types
 import { NavSectionTitle } from 'src/@core/layouts/types'
+// ** Component Imports
+import { AbilityContext } from 'src/layouts/components/acl/Can'
 
 interface Props {
   children: ReactNode

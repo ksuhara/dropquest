@@ -1,9 +1,9 @@
 // ** Types
 import { HorizontalNavItemsType, NavGroup, NavLink } from 'src/@core/layouts/types'
 
+import HorizontalNavGroup from './HorizontalNavGroup'
 // ** Custom Navigation Components
 import HorizontalNavLink from './HorizontalNavLink'
-import HorizontalNavGroup from './HorizontalNavGroup'
 
 interface Props {
   hasParent?: boolean

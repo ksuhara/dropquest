@@ -1,9 +1,8 @@
 // ** React Imports
-import { Fragment, ReactNode } from 'react'
-
+import { styled, useTheme } from '@mui/material/styles'
 // ** MUI Components
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { styled, useTheme } from '@mui/material/styles'
+import { Fragment, ReactNode } from 'react'
 
 interface FooterIllustrationsProp {
   image?: ReactNode

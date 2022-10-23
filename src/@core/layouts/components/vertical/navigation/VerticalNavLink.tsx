@@ -1,33 +1,27 @@
 // ** React Imports
-import { ElementType, ReactNode } from 'react'
-
-// ** Next Imports
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-
+import Box, { BoxProps } from '@mui/material/Box'
 // ** MUI Imports
 import Chip from '@mui/material/Chip'
 import ListItem from '@mui/material/ListItem'
-import Typography from '@mui/material/Typography'
-import Box, { BoxProps } from '@mui/material/Box'
+import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { styled, useTheme } from '@mui/material/styles'
-import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton'
-
-// ** Configs Import
-import themeConfig from 'src/configs/themeConfig'
-
-// ** Types
-import { NavLink, NavGroup } from 'src/@core/layouts/types'
+import Typography from '@mui/material/Typography'
+// ** Next Imports
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { ElementType, ReactNode } from 'react'
 import { Settings } from 'src/@core/context/settingsContext'
-
-// ** Custom Components Imports
-import UserIcon from 'src/layouts/components/UserIcon'
-import Translations from 'src/layouts/components/Translations'
-import CanViewNavLink from 'src/layouts/components/acl/CanViewNavLink'
-
+// ** Types
+import { NavGroup,NavLink } from 'src/@core/layouts/types'
 // ** Utils
 import { handleURLQueries } from 'src/@core/layouts/utils'
+// ** Configs Import
+import themeConfig from 'src/configs/themeConfig'
+import CanViewNavLink from 'src/layouts/components/acl/CanViewNavLink'
+import Translations from 'src/layouts/components/Translations'
+// ** Custom Components Imports
+import UserIcon from 'src/layouts/components/UserIcon'
 
 interface Props {
   parent?: boolean

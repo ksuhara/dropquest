@@ -1,20 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useAddress, useMetamask, useContract, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
-
-import type { NextPage } from 'next'
-
-import { ChainId, SignedPayload1155 } from '@thirdweb-dev/sdk'
-import { useRouter } from 'next/router'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Skeleton from '@mui/material/Skeleton'
 import Grid from '@mui/material/Grid'
+import Skeleton from '@mui/material/Skeleton'
+import { useAddress, useContract, useMetamask, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
+import { ChainId, SignedPayload1155 } from '@thirdweb-dev/sdk'
+import { doc,getDoc } from 'firebase/firestore'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import initializeFirebaseClient from 'src/configs/initFirebase'
-import { getDoc, doc } from 'firebase/firestore'
 
 const Mint: NextPage = () => {
   const router = useRouter()

@@ -1,15 +1,13 @@
-import { useAddress, useMetamask, useSignatureDrop, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
-
-import type { NextPage } from 'next'
-
-import { ChainId, SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk'
-import { useRouter } from 'next/router'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useSignatureDrop } from '@thirdweb-dev/react'
+import { ChainId, SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const Mint: NextPage = () => {
   const router = useRouter()

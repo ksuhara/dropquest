@@ -1,17 +1,14 @@
 // ** MUI Imports
+import Box, { BoxProps } from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Box, { BoxProps } from '@mui/material/Box'
-
 // ** Icons Imports
 import CircleOutline from 'mdi-material-ui/CircleOutline'
-
-// ** Util Import
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
-
 // ** Custom Components Imports
 import CustomChip from 'src/@core/components/mui/chip'
+// ** Util Import
+import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
 // ** Types
 import { PricingPlanProps } from './types'

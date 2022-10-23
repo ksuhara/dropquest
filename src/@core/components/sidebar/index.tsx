@@ -1,9 +1,8 @@
 // ** React Imports
-import { Fragment, useEffect } from 'react'
-
 // ** MUI Imports
 import Backdrop from '@mui/material/Backdrop'
 import Box, { BoxProps } from '@mui/material/Box'
+import { Fragment, useEffect } from 'react'
 
 // ** Types
 import { SidebarType } from './type'

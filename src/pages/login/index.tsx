@@ -1,38 +1,32 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // ** React Imports
-import { ReactNode } from 'react'
-import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
-import { signInWithCustomToken, signOut } from 'firebase/auth'
-
+import { yupResolver } from '@hookform/resolvers/yup'
 // ** MUI Components
 import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
 import Box, { BoxProps } from '@mui/material/Box'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import Button from '@mui/material/Button'
+import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
-// ** Third Party Imports
-import * as yup from 'yup'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
+import { signInWithCustomToken, signOut } from 'firebase/auth'
+import { useRouter } from 'next/router'
+import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-
 // ** Hooks
 import useBgColor from 'src/@core/hooks/useBgColor'
 import { useSettings } from 'src/@core/hooks/useSettings'
-
-// ** Configs
-import themeConfig from 'src/configs/themeConfig'
-
 // ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
+import initializeFirebaseClient from 'src/configs/initFirebase'
+// ** Configs
+import themeConfig from 'src/configs/themeConfig'
+import useFirebaseUser from 'src/hooks/useFirebaseUser'
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
-import initializeFirebaseClient from 'src/configs/initFirebase'
-import useFirebaseUser from 'src/hooks/useFirebaseUser'
-import { useRouter } from 'next/router'
+// ** Third Party Imports
+import * as yup from 'yup'
 
 // ** Styled Components
 const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({

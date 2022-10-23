@@ -1,7 +1,7 @@
 // ** MUI Import
 import Box from '@mui/material/Box'
-import { useTheme } from '@mui/material/styles'
 import CircularProgress from '@mui/material/CircularProgress'
+import { useTheme } from '@mui/material/styles'
 
 const FallbackSpinner = () => {
   // ** Hook

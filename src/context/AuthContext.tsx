@@ -1,17 +1,14 @@
 // ** React Imports
-import { createContext, useEffect, useState, ReactNode } from 'react'
-
-// ** Next Import
-import { useRouter } from 'next/router'
-
 // ** Axios
 import axios from 'axios'
-
+// ** Next Import
+import { useRouter } from 'next/router'
+import { createContext, ReactNode,useEffect, useState } from 'react'
 // ** Config
 import authConfig from 'src/configs/auth'
 
 // ** Types
-import { AuthValuesType, RegisterParams, LoginParams, ErrCallbackType, UserDataType } from './types'
+import { AuthValuesType, ErrCallbackType, LoginParams, RegisterParams, UserDataType } from './types'
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {

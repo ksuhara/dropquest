@@ -1,16 +1,14 @@
 // ** React Imports
-import { forwardRef, Ref } from 'react'
-
 // ** MUI Imports
 import MuiAvatar from '@mui/material/Avatar'
 import { lighten, useTheme } from '@mui/material/styles'
+import { forwardRef, Ref } from 'react'
+// ** Hooks Imports
+import useBgColor, { UseBgColorType } from 'src/@core/hooks/useBgColor'
+import { ThemeColor } from 'src/@core/layouts/types'
 
 // ** Types
 import { CustomAvatarProps } from './types'
-import { ThemeColor } from 'src/@core/layouts/types'
-
-// ** Hooks Imports
-import useBgColor, { UseBgColorType } from 'src/@core/hooks/useBgColor'
 
 const Avatar = forwardRef((props: CustomAvatarProps, ref: Ref<any>) => {
   // ** Props

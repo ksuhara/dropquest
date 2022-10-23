@@ -1,12 +1,10 @@
 // ** Next Import
-import Link from 'next/link'
-
 // ** MUI Imports
 import AppBar from '@mui/material/AppBar'
+import { styled, useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { styled, useTheme } from '@mui/material/styles'
-
+import Link from 'next/link'
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
 

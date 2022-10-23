@@ -6,13 +6,11 @@
  */
 
 // ** MUI Imports
-import { PaletteMode, Direction } from '@mui/material'
-
+import { Direction,PaletteMode } from '@mui/material'
 // ** Icon Import
 import CircleOutline from 'mdi-material-ui/CircleOutline'
-
 // ** Types
-import { Skin, AppBar, Footer, ContentWidth, VerticalNavToggle, HorizontalMenuToggle } from 'src/@core/layouts/types'
+import { AppBar, ContentWidth, Footer, HorizontalMenuToggle,Skin, VerticalNavToggle } from 'src/@core/layouts/types'
 
 type ThemeConfig = {
   skin: Skin

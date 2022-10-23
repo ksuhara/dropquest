@@ -1,29 +1,24 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment, ReactNode } from 'react'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import { styled, Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
+import { styled, Theme } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-
+import useMediaQuery from '@mui/material/useMediaQuery'
 // ** Icons Imports
 import BellOutline from 'mdi-material-ui/BellOutline'
-
+import { Fragment, ReactNode,SyntheticEvent, useState } from 'react'
 // ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
-
+import CustomAvatar from 'src/@core/components/mui/avatar'
+import { CustomAvatarProps } from 'src/@core/components/mui/avatar/types'
 // ** Custom Components Imports
 import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
-import { CustomAvatarProps } from 'src/@core/components/mui/avatar/types'
 
 interface Props {
   settings: Settings

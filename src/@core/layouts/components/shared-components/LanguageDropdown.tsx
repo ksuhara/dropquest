@@ -1,17 +1,13 @@
 // ** React Imports
-import { Fragment, SyntheticEvent, useEffect, useState } from 'react'
-
+import IconButton from '@mui/material/IconButton'
 // ** MUI Imports
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import IconButton from '@mui/material/IconButton'
-
 // ** Icons Imports
 import Translate from 'mdi-material-ui/Translate'
-
+import { Fragment, SyntheticEvent, useEffect, useState } from 'react'
 // ** Third Party Import
 import { useTranslation } from 'react-i18next'
-
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
 

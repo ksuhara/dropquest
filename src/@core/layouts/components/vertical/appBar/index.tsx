@@ -1,15 +1,12 @@
 // ** React Imports
-import { ReactNode } from 'react'
-
+import MuiAppBar, { AppBarProps } from '@mui/material/AppBar'
 // ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
-import useScrollTrigger from '@mui/material/useScrollTrigger'
-import MuiAppBar, { AppBarProps } from '@mui/material/AppBar'
 import MuiToolbar, { ToolbarProps } from '@mui/material/Toolbar'
-
+import useScrollTrigger from '@mui/material/useScrollTrigger'
+import { ReactNode } from 'react'
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
-
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 

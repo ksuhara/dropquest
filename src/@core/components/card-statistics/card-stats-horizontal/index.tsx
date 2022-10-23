@@ -1,15 +1,13 @@
 // ** MUI Imports
+import MuiAvatar, { AvatarProps } from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import MuiAvatar, { AvatarProps } from '@mui/material/Avatar'
-
+import ChevronDown from 'mdi-material-ui/ChevronDown'
 // ** Icons Imports
 import ChevronUp from 'mdi-material-ui/ChevronUp'
-import ChevronDown from 'mdi-material-ui/ChevronDown'
-
 // ** Types Imports
 import { CardStatsHorizontalProps } from 'src/@core/components/card-statistics/types'
 

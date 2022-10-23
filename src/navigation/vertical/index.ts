@@ -1,7 +1,6 @@
 // ** Icon imports
 import HomeOutline from 'mdi-material-ui/HomeOutline'
 import Upload from 'mdi-material-ui/Upload'
-
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 

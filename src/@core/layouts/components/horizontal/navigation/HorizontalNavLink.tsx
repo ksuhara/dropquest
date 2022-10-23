@@ -1,36 +1,29 @@
 // ** React Imports
-import { ElementType, Fragment } from 'react'
-
-// ** Next Imports
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import List from '@mui/material/List'
+import MuiListItem, { ListItemProps } from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import MuiListItem, { ListItemProps } from '@mui/material/ListItem'
-
 // ** Third Party Imports
 import clsx from 'clsx'
-
-// ** Theme Config Import
-import themeConfig from 'src/configs/themeConfig'
-
+// ** Next Imports
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { ElementType, Fragment } from 'react'
+import { Settings } from 'src/@core/context/settingsContext'
 // ** Types
 import { NavLink } from 'src/@core/layouts/types'
-import { Settings } from 'src/@core/context/settingsContext'
-
-// ** Custom Components Imports
-import UserIcon from 'src/layouts/components/UserIcon'
-import Translations from 'src/layouts/components/Translations'
-import CanViewNavLink from 'src/layouts/components/acl/CanViewNavLink'
-
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+// ** Theme Config Import
+import themeConfig from 'src/configs/themeConfig'
+import CanViewNavLink from 'src/layouts/components/acl/CanViewNavLink'
+import Translations from 'src/layouts/components/Translations'
+// ** Custom Components Imports
+import UserIcon from 'src/layouts/components/UserIcon'
 
 interface Props {
   item: NavLink

@@ -1,41 +1,34 @@
 // ** React Imports
-import { useEffect, Fragment } from 'react'
-
-// ** Next Import
-import { useRouter } from 'next/router'
-
+import Box, { BoxProps } from '@mui/material/Box'
 // ** MUI Imports
 import Chip from '@mui/material/Chip'
 import Collapse from '@mui/material/Collapse'
 import ListItem from '@mui/material/ListItem'
-import Typography from '@mui/material/Typography'
-import Box, { BoxProps } from '@mui/material/Box'
+import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { styled, useTheme } from '@mui/material/styles'
-import ListItemButton from '@mui/material/ListItemButton'
-
+import Typography from '@mui/material/Typography'
 // ** Third Party Imports
 import clsx from 'clsx'
-
 // ** Icons Imports
 import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 import ChevronRight from 'mdi-material-ui/ChevronRight'
-
-// ** Configs Import
-import themeConfig from 'src/configs/themeConfig'
-
-// ** Utils
-import { hasActiveChild, removeChildren } from 'src/@core/layouts/utils'
-
+// ** Next Import
+import { useRouter } from 'next/router'
+import { Fragment,useEffect } from 'react'
+import { Settings } from 'src/@core/context/settingsContext'
 // ** Types
 import { NavGroup } from 'src/@core/layouts/types'
-import { Settings } from 'src/@core/context/settingsContext'
+// ** Utils
+import { hasActiveChild, removeChildren } from 'src/@core/layouts/utils'
+// ** Configs Import
+import themeConfig from 'src/configs/themeConfig'
+import CanViewNavGroup from 'src/layouts/components/acl/CanViewNavGroup'
+import Translations from 'src/layouts/components/Translations'
+import UserIcon from 'src/layouts/components/UserIcon'
 
 // ** Custom Components Imports
 import VerticalNavItems from './VerticalNavItems'
-import UserIcon from 'src/layouts/components/UserIcon'
-import Translations from 'src/layouts/components/Translations'
-import CanViewNavGroup from 'src/layouts/components/acl/CanViewNavGroup'
 
 interface Props {
   item: NavGroup

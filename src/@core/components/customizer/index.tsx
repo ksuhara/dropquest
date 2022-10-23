@@ -1,30 +1,25 @@
 // ** React Imports
-import { useState } from 'react'
-
-// ** Third Party Components
-import PerfectScrollbar from 'react-perfect-scrollbar'
-
-// ** MUI Imports
-import Radio from '@mui/material/Radio'
-import Switch from '@mui/material/Switch'
+import Box, { BoxProps } from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import { styled } from '@mui/material/styles'
+import MuiDrawer, { DrawerProps } from '@mui/material/Drawer'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
 import InputLabel from '@mui/material/InputLabel'
+// ** MUI Imports
+import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
+import { styled } from '@mui/material/styles'
+import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import Box, { BoxProps } from '@mui/material/Box'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import MuiDrawer, { DrawerProps } from '@mui/material/Drawer'
-
 // ** Icons Imports
 import Check from 'mdi-material-ui/Check'
 import Close from 'mdi-material-ui/Close'
 import CogOutline from 'mdi-material-ui/CogOutline'
-
+import { useState } from 'react'
+// ** Third Party Components
+import PerfectScrollbar from 'react-perfect-scrollbar'
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
-
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
 

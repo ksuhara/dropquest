@@ -1,13 +1,10 @@
 // ** React Imports
-import { useState } from 'react'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
-
+import { useState } from 'react'
 // ** Third Party Imports
 import { useDropzone } from 'react-dropzone'
 

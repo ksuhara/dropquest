@@ -1,46 +1,39 @@
 // ** React Imports
-import { SyntheticEvent, useState, useEffect, Fragment } from 'react'
-
-// ** Next Import
-import { useRouter } from 'next/router'
-
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Fade from '@mui/material/Fade'
 import List from '@mui/material/List'
-import Paper from '@mui/material/Paper'
-import Typography from '@mui/material/Typography'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import { styled, useTheme } from '@mui/material/styles'
-import ClickAwayListener from '@mui/material/ClickAwayListener'
 import MuiListItem, { ListItemProps } from '@mui/material/ListItem'
-
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Paper from '@mui/material/Paper'
+import { styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 // ** Third Party Imports
 import clsx from 'clsx'
-import { usePopper } from 'react-popper'
-
 // ** Icons Imports
 import ChevronDown from 'mdi-material-ui/ChevronDown'
 import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 import ChevronRight from 'mdi-material-ui/ChevronRight'
-
-// ** Theme Config Import
-import themeConfig from 'src/configs/themeConfig'
-
+// ** Next Import
+import { useRouter } from 'next/router'
+import { Fragment,SyntheticEvent, useEffect, useState } from 'react'
+import { usePopper } from 'react-popper'
+import { Settings } from 'src/@core/context/settingsContext'
 // ** Types
 import { NavGroup } from 'src/@core/layouts/types'
-import { Settings } from 'src/@core/context/settingsContext'
+import { hasActiveChild } from 'src/@core/layouts/utils'
+// ** Utils
+import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+// ** Theme Config Import
+import themeConfig from 'src/configs/themeConfig'
+import CanViewNavGroup from 'src/layouts/components/acl/CanViewNavGroup'
+import Translations from 'src/layouts/components/Translations'
+import UserIcon from 'src/layouts/components/UserIcon'
 
 // ** Custom Components Imports
 import HorizontalNavItems from './HorizontalNavItems'
-import UserIcon from 'src/layouts/components/UserIcon'
-import Translations from 'src/layouts/components/Translations'
-import CanViewNavGroup from 'src/layouts/components/acl/CanViewNavGroup'
-
-// ** Utils
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
-import { hasActiveChild } from 'src/@core/layouts/utils'
 
 interface Props {
   item: NavGroup

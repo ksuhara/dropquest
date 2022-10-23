@@ -1,5 +1,6 @@
-import { doc, DocumentData, onSnapshot, query, collection, where } from 'firebase/firestore'
+import { collection, doc, DocumentData, onSnapshot, query, where } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
+
 import initializeFirebaseClient from '../configs/initFirebase'
 import useFirebaseUser from './useFirebaseUser'
 

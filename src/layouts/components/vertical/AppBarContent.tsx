@@ -1,13 +1,10 @@
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-
 // ** Icons Imports
 import MenuIcon from 'mdi-material-ui/Menu'
-
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
-
 // ** Components
 import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
 import UserDropdown from 'src/layouts/components/UserDropdown'

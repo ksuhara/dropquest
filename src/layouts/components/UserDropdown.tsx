@@ -1,29 +1,24 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
-
-// ** Next Import
-import { useRouter } from 'next/router'
-
+import Avatar from '@mui/material/Avatar'
+import Badge from '@mui/material/Badge'
 // ** MUI Imports
 import Box from '@mui/material/Box'
-import Menu from '@mui/material/Menu'
-import Badge from '@mui/material/Badge'
-import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
+import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-
+// ** Context
+import { signOut } from 'firebase/auth'
+import AccountOutline from 'mdi-material-ui/AccountOutline'
 // ** Icons Imports
 import CogOutline from 'mdi-material-ui/CogOutline'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import LogoutVariant from 'mdi-material-ui/LogoutVariant'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-
-// ** Context
-import { signOut } from 'firebase/auth'
-
+import LogoutVariant from 'mdi-material-ui/LogoutVariant'
+// ** Next Import
+import { useRouter } from 'next/router'
+import { Fragment,SyntheticEvent, useState } from 'react'
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
 import initializeFirebaseClient from 'src/configs/initFirebase'

@@ -1,5 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from 'next/types'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
+
 import initializeFirebaseServer from '../../../configs/initFirebaseAdmin'
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {

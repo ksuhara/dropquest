@@ -1,12 +1,9 @@
 // ** React Imports
-import { useEffect } from 'react'
-
 // ** Next Imports
 import { useRouter } from 'next/router'
-
+import { useEffect } from 'react'
 // ** Spinner Import
 import Spinner from 'src/@core/components/spinner'
-
 // ** Hook Imports
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
