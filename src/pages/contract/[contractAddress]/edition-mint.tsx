@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAddress, useMetamask, useContract, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
 
 import type { NextPage } from 'next'
@@ -11,6 +12,9 @@ import { Typography } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
+import Grid from '@mui/material/Grid'
+import initializeFirebaseClient from 'src/configs/initFirebase'
+import { getDoc, doc } from 'firebase/firestore'
 
 const Mint: NextPage = () => {
   const router = useRouter()
@@ -22,17 +26,24 @@ const Mint: NextPage = () => {
   const [, switchNetwork] = useNetwork()
 
   const edition = useContract(contractAddress as string, 'edition')
+  const { db } = initializeFirebaseClient()
 
-  const [metadata, setMetadata] = useState<any>()
+  const [contractData, setContractData] = useState<any>()
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchMetadata = async () => {
-      if (!edition || metadata) return
-
-      const unclaimed = await edition.contract?.getAll()
-      setMetadata(unclaimed ? unclaimed[0].metadata : undefined)
+    const syncData = async () => {
+      if (!contractAddress) return
+      const docRef = doc(db, 'contracts', contractAddress as string)
+      const docdata = await getDoc(docRef)
+      if (docdata.exists()) {
+        setContractData({
+          ...docdata.data(),
+          id: docdata.id
+        })
+      }
     }
-    fetchMetadata()
+    syncData()
   }, [edition])
 
   async function claimWithSignature() {
@@ -75,34 +86,42 @@ const Mint: NextPage = () => {
   }
 
   return (
-    <Card sx={{ textAlign: 'center', maxWidth: 800, mx: 'auto' }}>
-      <CardContent>
-        <Box>
-          {metadata?.image ? (
-            <img src={metadata.image} alt='nftimage' width={300} height={300} />
-          ) : (
-            <Skeleton variant='rectangular' width={300} height={300} sx={{ mx: 'auto' }} />
-          )}
-        </Box>
-        {metadata?.name && (
-          <Typography variant='h6' component={'p'}>
-            Token name: {metadata.name}
-          </Typography>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={6}>
+        {contractData?.image ? (
+          <img src={contractData.image} alt='nftimage' width={'100%'} />
+        ) : (
+          <Skeleton variant='rectangular' width={'100%'} sx={{ mx: 'auto' }} />
         )}
-        <Typography>You can mint this NFT without paying gas.</Typography>
-        <Box marginTop={4}>
-          {address ? (
-            <Button onClick={() => claimWithSignature()} variant='contained' size='large'>
-              claim
-            </Button>
-          ) : (
-            <Button onClick={() => connectWithMetamask()} variant='contained' size='large'>
-              Connect Wallet
-            </Button>
-          )}
-        </Box>
-      </CardContent>
-    </Card>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Card sx={{ mx: 'auto', minHeight: '100%' }}>
+          <CardContent>
+            {contractData ? (
+              <>
+                <Typography variant='h2'>{contractData.name}</Typography>
+                <Typography variant='subtitle2'>{contractAddress}</Typography>
+                <Typography variant='subtitle2'>created by:{contractAddress}</Typography>
+              </>
+            ) : (
+              <></>
+            )}
+            <Typography>You can mint this NFT without paying gas.</Typography>
+            <Box marginTop={4}>
+              {address ? (
+                <Button onClick={() => claimWithSignature()} variant='contained' size='large'>
+                  claim
+                </Button>
+              ) : (
+                <Button onClick={() => connectWithMetamask()} variant='contained' size='large'>
+                  Connect Wallet
+                </Button>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   )
 }
 

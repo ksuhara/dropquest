@@ -10,16 +10,13 @@ import TextField from '@mui/material/TextField'
 
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import FileUploaderSingle from 'src/views/forms/form-elements/file-uploader/FileUploaderSingle'
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import Alert from '@mui/material/Alert'
 import useBgColor from 'src/@core/hooks/useBgColor'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import RadioGroup from '@mui/material/RadioGroup'
-import Radio from '@mui/material/Radio'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useRouter } from 'next/router'
 
-const SecondPage = () => {
+const CreateContractPage = () => {
   const address = useAddress()
   const connectWithMetamask = useMetamask()
   const sdk = useSDK()
@@ -44,6 +41,7 @@ const SecondPage = () => {
       image: imageURL
     }
 
+    console.log(111)
     const contractAddress = await sdk.deployer.deployBuiltInContract('edition', contractMetadata)
     console.log(contractAddress)
     const edition = await sdk.getContract(contractAddress, 'edition')
@@ -123,4 +121,4 @@ const SecondPage = () => {
   )
 }
 
-export default SecondPage
+export default CreateContractPage

@@ -67,6 +67,7 @@ const Mint: NextPage = () => {
         const signedPayload = (await signedPayloadReq.json()) as SignedPayload721WithQuantitySignature
 
         const tx = await signatureDrop?.signature.mint(signedPayload)
+        console.log(tx)
 
         alert(`Succesfully minted NFT!`)
       } catch (error: any) {

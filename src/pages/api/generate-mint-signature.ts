@@ -1,6 +1,5 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { firestore } from 'firebase-admin'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
 import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
 export default async function generateMintSignature(req: NextApiRequest, res: NextApiResponse) {

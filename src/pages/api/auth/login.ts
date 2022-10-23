@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import initializeFirebaseServer from '../../../configs/initFirebaseAdmin'
 
@@ -12,6 +12,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
   console.log(process.env.ADMIN_PRIVATE_KEY!, 'process.env.ADMIN_PRIVATE_KEY!,')
 
   const sdk = ThirdwebSDK.fromPrivateKey(
+
     // https://portal.thirdweb.com/sdk/set-up-the-sdk/securing-your-private-key
     process.env.ADMIN_PRIVATE_KEY!,
     'goerli' // configure this to your network

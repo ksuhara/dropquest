@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -8,12 +8,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 export default async function stripeCheckout(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { contractAddress } = JSON.parse(req.body)
+      const { contractAddress, plan } = JSON.parse(req.body)
       console.log(contractAddress, 'contractAddress')
       const session = await stripe.checkout.sessions.create({
         line_items: [
           {
-            price: 'price_1LpXqADh9iB9gv9Ly3Pg1xfP',
+            price: plan == 10 ? 'price_1LvZIeDh9iB9gv9LzXUycEkx' : 'price_1Lva4HDh9iB9gv9LLqEW4FGm',
             quantity: 1
           }
         ],
@@ -21,9 +21,12 @@ export default async function stripeCheckout(req: NextApiRequest, res: NextApiRe
         success_url: `${req.headers.origin}/?success=true`,
         cancel_url: `${req.headers.origin}/?canceled=true`,
         metadata: {
-          contractAddress: contractAddress
+          contractAddress,
+          plan
         }
       })
+
+      console.log(session, 'sssss')
 
       return res.status(200).json({
         session_id: session.id,

@@ -1,13 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Button from '@mui/material/Button'
-import {
-  useAddress,
-  useContract,
-  useUnclaimedNFTSupply,
-  useClaimedNFTSupply,
-  useSDK,
-  useNFTs,
-  ThirdwebNftMedia
-} from '@thirdweb-dev/react'
+import { useContract } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
@@ -21,28 +14,25 @@ import Switch from '@mui/material/Switch'
 import Grid from '@mui/material/Grid'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import Divider from '@mui/material/Divider'
+import CardHeader from '@mui/material/CardHeader'
 import Circle from 'mdi-material-ui/Circle'
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 import { useTheme } from '@mui/material'
 import { ApexOptions } from 'apexcharts'
 import Plus from 'mdi-material-ui/Plus'
-import Link from '@mui/material/Link'
+import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
+import Ethereum from 'mdi-material-ui/Ethereum'
 import InputLabel from '@mui/material/InputLabel'
 import { styled } from '@mui/material/styles'
-import Modal from '@mui/material/Modal'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
 import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  minWidth: 400,
-  p: 4
-}
 
 const EditionAdmin = () => {
   const router = useRouter()
@@ -50,15 +40,17 @@ const EditionAdmin = () => {
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
   const theme = useTheme()
-  const sdk = useSDK()
-  const contractQuery = useContract(contractAddress as string)
+
+  // const sdk = useSDK()
+  // const contractQuery = useContract(contractAddress as string)
   const edition = useContract(contractAddress as string, 'edition')
 
-  const { data: nfts } = useNFTs(contractQuery.contract)
+  // const { data: nfts } = useNFTs(contractQuery.contract)
 
   const [contractData, setContractData] = useState<any>()
   const [keys, setKeys] = useState<Key[]>([])
   const [rows, setRows] = useState<GridRowsProp>([])
+  const [plan, setPlan] = useState(10)
 
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
@@ -115,7 +107,8 @@ const EditionAdmin = () => {
     const response = await fetch(`/api/stripe-checkout`, {
       method: 'POST',
       body: JSON.stringify({
-        contractAddress
+        contractAddress,
+        plan
       })
     }).then(data => data.json())
     if (response.customer_id) {
@@ -123,6 +116,18 @@ const EditionAdmin = () => {
     }
     console.log(response, 'respense')
     console.log(response.checkout_url)
+    router.push(response.checkout_url)
+  }
+
+  const slashPayment = async () => {
+    const response = await fetch(`/api/slash-checkout`, {
+      method: 'POST',
+      body: JSON.stringify({
+        contractAddress,
+        plan
+      })
+    }).then(data => data.json())
+    console.log(response, 'respense')
     router.push(response.checkout_url)
   }
 
@@ -166,24 +171,22 @@ const EditionAdmin = () => {
     syncData()
   }, [contractAddress])
 
-  useEffect(() => {
-    const syncNfts = async () => {
-      console.log(rows)
-      const newRows = nfts?.map(nft => {
-        console.log(nft.metadata)
-
-        return {
-          id: nft.metadata.id,
-          supply: nft.supply,
-          name: nft.metadata.name,
-          image: nft.metadata.image
-        }
-      })
-      if (!newRows) return
-      setRows(newRows)
-    }
-    syncNfts()
-  }, [nfts])
+  // useEffect(() => {
+  //   const syncNfts = async () => {
+  //     console.log(rows)
+  //     const newRows = nfts?.map(nft => {
+  //       return {
+  //         id: nft.metadata.id,
+  //         supply: nft.supply,
+  //         name: nft.metadata.name,
+  //         image: nft.metadata.image
+  //       }
+  //     })
+  //     if (!newRows) return
+  //     setRows(newRows)
+  //   }
+  //   syncNfts()
+  // }, [nfts])
 
   return (
     <>
@@ -209,7 +212,7 @@ const EditionAdmin = () => {
             <Grid item xs={12} md={8}>
               <Card>
                 <CardHeader
-                  title='Tokens Overview'
+                  title='Mint Tickets Overview'
                   titleTypographyProps={{
                     sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
                   }}
@@ -255,7 +258,80 @@ const EditionAdmin = () => {
                         >
                           購入
                         </Button>
-                        <Modal
+                        <Dialog
+                          open={open}
+                          onClose={handleClose}
+                          aria-labelledby='user-view-plans'
+                          aria-describedby='user-view-plans-description'
+                          sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, pt: 8, pb: 8 } }}
+                        >
+                          <DialogTitle id='user-view-plans' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
+                            Add Mint Ticket
+                          </DialogTitle>
+
+                          <DialogContent>
+                            <DialogContentText
+                              variant='body2'
+                              sx={{ textAlign: 'center' }}
+                              id='user-view-plans-description'
+                            >
+                              Choose the best plan for the user.
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogContent
+                            sx={{
+                              display: 'flex',
+                              pb: 4,
+                              pl: [6, 15],
+                              pr: [6, 15],
+                              alignItems: 'center',
+                              flexWrap: ['wrap', 'nowrap'],
+                              pt: theme => `${theme.spacing(2)} !important`
+                            }}
+                          >
+                            <FormControl fullWidth size='small' sx={{ mr: [0, 3], mb: [3, 0] }}>
+                              <InputLabel id='user-view-plans-select-label'>Choose Plan</InputLabel>
+                              <Select
+                                label='Choose Plan'
+                                defaultValue={100}
+                                id='user-view-plans-select'
+                                labelId='user-view-plans-select-label'
+                                onChange={e => setPlan(Number(e.target.value))}
+                              >
+                                <MenuItem value={100}>100 mints - $5</MenuItem>
+                                <MenuItem value={1000}>1000 mints - $40</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </DialogContent>
+                          <DialogContent
+                            sx={{
+                              display: 'flex',
+                              pb: 8,
+                              pl: [6, 15],
+                              pr: [6, 15],
+                              flexWrap: ['wrap', 'nowrap'],
+                              pt: theme => `${theme.spacing(2)} !important`
+                            }}
+                          >
+                            <Button
+                              variant='contained'
+                              sx={{ minWidth: ['100%', 0], mr: 2, mb: [2, 0] }}
+                              startIcon={<CreditCardOutline />}
+                              onClick={payment}
+                            >
+                              Credit Card Payment
+                            </Button>
+                            <Button
+                              onClick={slashPayment}
+                              variant='contained'
+                              sx={{ minWidth: ['100%', 0] }}
+                              startIcon={<Ethereum />}
+                            >
+                              Crypto Payment
+                            </Button>
+                          </DialogContent>
+                        </Dialog>
+                        {/* <Modal
                           open={open}
                           onClose={handleClose}
                           aria-labelledby='modal-modal-title'
@@ -270,7 +346,7 @@ const EditionAdmin = () => {
                               Checkout
                             </Button>
                           </Card>
-                        </Modal>
+                        </Modal> */}
                       </Box>
                     </Grid>
                   </Grid>
@@ -294,11 +370,11 @@ const EditionAdmin = () => {
                   >
                     Edit on Thirdweb
                   </Button>
-                  {rows.length ? (
+                  {/* {rows.length ? (
                     <DataGrid autoHeight rows={rows} columns={columns} experimentalFeatures={{ newEditingApi: true }} />
                   ) : (
                     <p>loading</p>
-                  )}
+                  )} */}
                 </CardContent>
               </Card>
             </Grid>

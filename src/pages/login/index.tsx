@@ -1,32 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ** React Imports
-import { useState, ReactNode, MouseEvent } from 'react'
+import { ReactNode } from 'react'
 import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
 import { signInWithCustomToken, signOut } from 'firebase/auth'
-
-// ** Next Imports
-import Link from 'next/link'
 
 // ** MUI Components
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import Checkbox from '@mui/material/Checkbox'
-import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
-import IconButton from '@mui/material/IconButton'
 import Box, { BoxProps } from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import { styled, useTheme } from '@mui/material/styles'
-import FormHelperText from '@mui/material/FormHelperText'
-import InputAdornment from '@mui/material/InputAdornment'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
@@ -83,18 +72,18 @@ const TypographyStyled = styled(Typography)<TypographyProps>(({ theme }) => ({
   [theme.breakpoints.down('md')]: { mt: theme.spacing(8) }
 }))
 
-const LinkStyled = styled('a')(({ theme }) => ({
-  fontSize: '0.875rem',
-  textDecoration: 'none',
-  color: theme.palette.primary.main
-}))
+// const LinkStyled = styled('a')(({ theme }) => ({
+//   fontSize: '0.875rem',
+//   textDecoration: 'none',
+//   color: theme.palette.primary.main
+// }))
 
-const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
-  '& .MuiFormControlLabel-label': {
-    fontSize: '0.875rem',
-    color: theme.palette.text.secondary
-  }
-}))
+// const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
+//   '& .MuiFormControlLabel-label': {
+//     fontSize: '0.875rem',
+//     color: theme.palette.text.secondary
+//   }
+// }))
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -106,10 +95,10 @@ const defaultValues = {
   email: 'admin@materio.com'
 }
 
-interface FormData {
-  email: string
-  password: string
-}
+// interface FormData {
+//   email: string
+//   password: string
+// }
 
 const LoginPage = () => {
   const address = useAddress()
@@ -130,27 +119,16 @@ const LoginPage = () => {
   // ** Vars
   const { skin } = settings
 
-  const {
-    control,
-    setError,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    defaultValues,
-    mode: 'onBlur',
-    resolver: yupResolver(schema)
-  })
-
-  const onSubmit = (data: FormData) => {
-    const { email, password } = data
-    console.log('login')
-    auth.login({ email, password }, () => {
-      setError('email', {
-        type: 'manual',
-        message: 'Email or Password is invalid'
-      })
-    })
-  }
+  // const {
+  //   control,
+  //   setError,
+  //   handleSubmit,
+  //   formState: { errors }
+  // } = useForm({
+  //   defaultValues,
+  //   mode: 'onBlur',
+  //   resolver: yupResolver(schema)
+  // })
 
   async function signIn() {
     // Use the same address as the one specified in _app.tsx.
@@ -167,6 +145,7 @@ const LoginPage = () => {
 
     const { token } = await res.json()
     signInWithCustomToken(auth, token)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((userCredential: { user: any }) => {
         const returnUrl = router.query.returnUrl
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
@@ -291,7 +270,7 @@ const LoginPage = () => {
               <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
             </Box>
 
-            <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+            <form noValidate autoComplete='off'>
               {/* <Box
                 sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
               >

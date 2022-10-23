@@ -1,33 +1,16 @@
 // ** MUI Imports
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import TextField from '@mui/material/TextField'
-import { useAddress } from '@thirdweb-dev/react'
-import { useState, useEffect } from 'react'
+
 import Link from 'next/link'
 
-import { collection, query, where, getDocs } from 'firebase/firestore'
-import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseDocument from 'src/hooks/useFirebaseUserDocument'
-import { ConsoleNetworkOutline } from 'mdi-material-ui'
-import Box from '@mui/material/Box'
 
 const Home = () => {
-  const address = useAddress()
-  const [nftAddress, setNFTAddress] = useState('')
-  const registerNFT = async () => {
-    await fetch(`/api/register-nft-contract`, {
-      method: 'POST',
-      body: JSON.stringify({
-        nftAddress,
-        address
-      })
-    })
-  }
+  // const address = useAddress()
 
   const { contractsDocument } = useFirebaseDocument()
   console.log(contractsDocument, 'contractsDocument')

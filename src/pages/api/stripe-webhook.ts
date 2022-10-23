@@ -1,5 +1,5 @@
 import { firestore } from 'firebase-admin'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
 import { buffer } from 'micro'
 import randomstring from 'randomstring'
 import Stripe from 'stripe'
@@ -24,16 +24,19 @@ export default async function stripeWebhook(req: NextApiRequest, res: NextApiRes
     stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_ENDPOINT_SECRET || '')
   } catch (err: any) {
     console.log(err)
-    res.status(400).send(`Webhook Error: ${err.message}`)
+
+    return res.status(400).send(`Webhook Error: ${err.message}`)
   }
   const parsedBody = JSON.parse(buf.toString())
+  const metadata = parsedBody.data.object.metadata
   const { db } = initializeFirebaseServer()
-  const docRef = db.collection('contracts').doc(parsedBody.data.object.metadata.contractAddress)
+  const docRef = db.collection('contracts').doc(metadata.contractAddress)
   const doc = await docRef.get()
   const keys = doc.data()!.keys
-  for (let i = 0; i < 10; i++) {
+  const ticketsAdd = metadata.plan
+  for (let i = 0; i < ticketsAdd; i++) {
     const rand = randomstring.generate({
-      length: 12,
+      length: 16,
       charset: 'alphanumeric',
       capitalization: 'lowercase'
     })

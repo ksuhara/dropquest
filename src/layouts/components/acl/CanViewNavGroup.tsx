@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ** React Imports
 import { ReactNode, useContext } from 'react'
 
@@ -31,8 +32,6 @@ const CanViewNavGroup = (props: Props) => {
   }
 
   return <>{children}</>
-
-  return navGroup && canViewMenuGroup(navGroup) ? <>{children}</> : null
 }
 
 export default CanViewNavGroup

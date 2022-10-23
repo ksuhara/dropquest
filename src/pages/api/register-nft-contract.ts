@@ -1,5 +1,5 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next/types'
 import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 import randomstring from 'randomstring'
 import { firestore } from 'firebase-admin'

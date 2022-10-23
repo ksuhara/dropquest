@@ -1,9 +1,8 @@
 // ** React Imports
-import { useState, SyntheticEvent } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
-import Link from '@mui/material/Link'
 import { styled } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 
@@ -16,10 +15,6 @@ interface FileProp {
   name: string
   type: string
   size: number
-}
-
-interface FileProp {
-  setImageURL: () => {}
 }
 
 // Styled component for the upload image inside the dropzone area
@@ -43,7 +38,11 @@ const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
   }
 }))
 
-const FileUploaderSingle = ({ setImageURL }) => {
+interface Props {
+  setImageURL: any
+}
+
+const FileUploaderSingle = ({ setImageURL }: Props) => {
   // ** State
   const [files, setFiles] = useState<File[]>([])
 

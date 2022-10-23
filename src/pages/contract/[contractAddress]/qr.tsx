@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Button from '@mui/material/Button'
 import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router'
@@ -65,11 +66,11 @@ const ContractQR = () => {
       {contractData && user?.uid == contractData.owner && !isLoading ? (
         <>
           <Grid item xs={12} md={6}>
-            <Card sx={{ mx: 'auto' }}>
-              <CardContent>
-                <img src={contractData.image} width={'100%'}></img>
-              </CardContent>
-            </Card>
+            {/* <Card sx={{ mx: 'auto' }}>
+              <CardContent> */}
+            <img src={contractData.image} width={'100%'}></img>
+            {/* </CardContent> */}
+            {/* </Card> */}
           </Grid>
           <Grid item xs={12} md={6}>
             <Card sx={{ mx: 'auto', minHeight: '100%' }}>
