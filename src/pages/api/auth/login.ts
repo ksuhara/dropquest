@@ -1,4 +1,3 @@
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import type { NextApiRequest, NextApiResponse } from 'next/types'
 
