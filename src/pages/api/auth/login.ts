@@ -39,8 +39,12 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
   // Initialize the Firebase Admin SDK.
   const { auth } = initializeFirebaseServer()
 
+  console.log(9)
+
   // Generate a JWT token for the user to be used on the client-side.
   const token = await auth.createCustomToken(address)
+
+  console.log(10)
 
   // Send the token to the client to sign in with.
   return res.status(200).json({ token })
