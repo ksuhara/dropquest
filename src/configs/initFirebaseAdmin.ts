@@ -1,5 +1,5 @@
 import admin from 'firebase-admin'
-import { cert,initializeApp } from 'firebase-admin/app'
+import { cert, initializeApp } from 'firebase-admin/app'
 import { Auth, getAuth } from 'firebase-admin/auth'
 import { Firestore, getFirestore } from 'firebase-admin/firestore'
 
@@ -8,11 +8,14 @@ export default function initializeFirebaseServer(): {
   db: Firestore
   auth: Auth
 } {
+  console.log(6)
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+
   const privateKey = (process.env.FIREBASE_PRIVATE_KEY as string).replace(/\\n/g, '\n')
   const projectId = process.env.NEXT_PUBLIC_PROJECT_ID
 
   if (admin.apps.length === 0) {
+    console.log(7)
     initializeApp({
       credential: cert({
         clientEmail,
@@ -20,6 +23,7 @@ export default function initializeFirebaseServer(): {
         projectId
       })
     })
+    console.log(8)
   }
 
   const db = getFirestore()
