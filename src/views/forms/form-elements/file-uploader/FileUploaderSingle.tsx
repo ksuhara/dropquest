@@ -71,10 +71,7 @@ const FileUploaderSingle = ({ setImageURL }: Props) => {
       <input {...getInputProps()} />
       <Box sx={{ display: 'flex', flexDirection: ['column', 'column', 'row'], alignItems: 'center' }}>
         <Img alt='Upload img' src='/images/misc/upload.png' />
-        <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: ['center', 'center', 'inherit'] }}>
-          <HeadingTypography variant='h5'>Drop files here or click to upload.</HeadingTypography>
-          <Typography color='textSecondary'>Drop files here or click </Typography>
-        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: ['center', 'center', 'inherit'] }}></Box>
       </Box>
       {files.length ? img : null}
     </Box>

@@ -13,7 +13,7 @@ const navigation = (): HorizontalNavItemsType => [
   {
     title: 'Create Contract',
     icon: Upload,
-    path: '/second-page'
+    path: '/create-contract'
   }
 ]
 

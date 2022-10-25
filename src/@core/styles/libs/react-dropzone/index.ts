@@ -64,7 +64,7 @@ const DropzoneWrapper = styled(Box)<BoxProps>(({ theme }) => ({
       }
     },
     '& img.single-file-image': {
-      objectFit: 'cover',
+      objectFit: 'contain',
       position: 'absolute',
       width: 'calc(100% - 1rem)',
       height: 'calc(100% - 1rem)',

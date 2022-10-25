@@ -8,7 +8,7 @@ import Grid from '@mui/material/Grid'
 import Skeleton from '@mui/material/Skeleton'
 import { useAddress, useContract, useMetamask, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
 import { ChainId, SignedPayload1155 } from '@thirdweb-dev/sdk'
-import { doc,getDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -97,7 +97,9 @@ const Mint: NextPage = () => {
           <CardContent>
             {contractData ? (
               <>
-                <Typography variant='h2'>{contractData.name}</Typography>
+                <Typography variant='h2' mb={2}>
+                  {contractData.name}
+                </Typography>
                 <Typography variant='subtitle2'>{contractAddress}</Typography>
                 <Typography variant='subtitle2'>created by:{contractAddress}</Typography>
               </>

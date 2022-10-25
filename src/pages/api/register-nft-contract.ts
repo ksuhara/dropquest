@@ -43,6 +43,7 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
     {
       name: contractMetadata.name,
       symbol: contractMetadata.symbol,
+      image: contractMetadata.image,
       contractAddress: nftAddress,
       owner: address,
       keys: keys,

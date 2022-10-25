@@ -14,7 +14,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Create Contract',
       icon: Upload,
-      path: '/second-page'
+      path: '/create-contract'
     }
   ]
 }

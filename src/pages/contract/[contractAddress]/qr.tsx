@@ -75,16 +75,21 @@ const ContractQR = () => {
           <Grid item xs={12} md={6}>
             <Card sx={{ mx: 'auto', minHeight: '100%' }}>
               <CardContent>
-                <Typography variant='h2'>{contractData.name}</Typography>
-                <Typography variant='subtitle2'>{contractAddress}</Typography>
-                <Typography variant='subtitle2'>created by:{contractAddress}</Typography>
+                <Typography variant='h2' mb={2}>
+                  {contractData.name}
+                </Typography>
+                <Typography variant='subtitle2' noWrap>
+                  {contractAddress}
+                </Typography>
+                <Typography variant='subtitle2' noWrap>
+                  created by:{contractAddress}
+                </Typography>
                 <Canvas
                   text={`${basePath}/contract/${contractAddress}/mint?key=${qrKey}`}
                   options={{
                     type: 'image/jpeg',
                     quality: 0.3,
                     level: 'M',
-                    margin: 3,
                     scale: 4,
                     width: 360,
                     color: {
