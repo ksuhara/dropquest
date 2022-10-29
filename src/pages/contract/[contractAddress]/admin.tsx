@@ -231,11 +231,10 @@ const EditionAdmin = () => {
       setKeys(validKeys)
     }
     syncData()
-  }, [contractAddress])
+  }, [contractAddress, db])
 
   useEffect(() => {
     const syncNfts = async () => {
-      console.log(rows)
       const newRows = nfts?.map(nft => {
         return {
           id: nft.metadata.id,

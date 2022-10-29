@@ -32,13 +32,13 @@ const ContractQR = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [qrKey, setQrKey] = useState('')
 
-  const filterValidKeys = (keys: Key[]) => {
-    const result = keys.filter(key => key.isUsed == false)
-
-    return result
-  }
-
   useEffect(() => {
+    const filterValidKeys = (keys: Key[]) => {
+      const result = keys.filter(key => key.isUsed == false)
+
+      return result
+    }
+
     const syncData = async () => {
       if (!contractAddress) return
       const docRef = doc(db, 'contracts', contractAddress as string)
@@ -57,8 +57,7 @@ const ContractQR = () => {
       })
     }
     syncData()
-    console.log(contractData)
-  }, [contractAddress])
+  }, [contractAddress, db])
 
   return (
     <Grid container spacing={4}>
@@ -67,7 +66,7 @@ const ContractQR = () => {
           <Grid item xs={12} md={6}>
             {/* <Card sx={{ mx: 'auto' }}>
               <CardContent> */}
-            <img src={contractData.image} width={'100%'}></img>
+            <img src={contractData.image} width={'100%'} alt='contract image'></img>
             {/* </CardContent> */}
             {/* </Card> */}
           </Grid>

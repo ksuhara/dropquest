@@ -1,7 +1,6 @@
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { NextApiRequest, NextApiResponse } from 'next/types'
-import { EvmChain, EvmNft } from '@moralisweb3/evm-utils'
+import { EvmChain } from '@moralisweb3/evm-utils'
 import Moralis from 'moralis'
+import { NextApiRequest, NextApiResponse } from 'next/types'
 
 const chainIdToChain = {
   ethrerum: EvmChain.ETHEREUM,

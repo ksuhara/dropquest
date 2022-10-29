@@ -2,7 +2,6 @@
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import Typography, { TypographyProps } from '@mui/material/Typography'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
 import { useState } from 'react'
 // ** Third Party Imports
@@ -24,14 +23,6 @@ const Img = styled('img')(({ theme }) => ({
   },
   [theme.breakpoints.down('sm')]: {
     width: 160
-  }
-}))
-
-// Styled component for the heading inside the dropzone area
-const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
-  marginBottom: theme.spacing(5),
-  [theme.breakpoints.down('sm')]: {
-    marginBottom: theme.spacing(4)
   }
 }))
 

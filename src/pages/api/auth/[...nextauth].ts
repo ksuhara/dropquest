@@ -1,5 +1,4 @@
 import NextAuth from 'next-auth'
-// import GitHubProvider from 'next-auth/providers/github'
 import TwitterProvider from 'next-auth/providers/twitter'
 
 const authOptions = {
@@ -11,15 +10,15 @@ const authOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account }: any) {
       if (account) {
         token.accessToken = account.access_token
       }
 
       return token
     },
-    //セッションがチェックされた時に呼ばれる
-    async session({ session, token, user }) {
+
+    async session({ session, token }: any) {
       session.accessToken = token.accessToken
 
       return session

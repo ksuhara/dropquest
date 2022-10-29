@@ -63,7 +63,7 @@ const Mint: NextPage = () => {
       }
     }
     syncData()
-  }, [edition])
+  }, [edition, db, contractAddress])
 
   async function claimWithSignature() {
     if (!address) {
