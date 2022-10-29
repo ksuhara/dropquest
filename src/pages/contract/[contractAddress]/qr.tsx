@@ -7,7 +7,6 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useAddress } from '@thirdweb-dev/react'
-import { AnyAaaaRecord } from 'dns'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { useRouter } from 'next/router'
 import { useQRCode } from 'next-qrcode'
@@ -18,7 +17,8 @@ import useFirebaseUser from 'src/hooks/useFirebaseUser'
 const ContractQR = () => {
   const router = useRouter()
   const { contractAddress } = router.query
-  const basePath = router.basePath ? router.basePath : 'http://localhost:3000'
+  const basePath =
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://regidrop-frontend.vercel.app/'
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
   const { Canvas } = useQRCode()

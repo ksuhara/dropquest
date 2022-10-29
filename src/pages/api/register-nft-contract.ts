@@ -44,6 +44,7 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
       name: contractMetadata.name,
       symbol: contractMetadata.symbol,
       image: contractMetadata.image,
+      description: contractMetadata.description,
       contractAddress: nftAddress,
       owner: address,
       keys: keys,
@@ -52,5 +53,5 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
     },
     { merge: true }
   )
-  res.status(200).json('mintSignature')
+  res.status(200).json('registered')
 }

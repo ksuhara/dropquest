@@ -59,9 +59,7 @@ const Home = () => {
                 <CardHeader title={contract.name}></CardHeader>
                 <CardContent>
                   <Typography sx={{ mb: 2 }}>{contract.contractAddress}</Typography>
-                  <Typography>
-                    Please read our Authentication and ACL Documentations to get more out of them.
-                  </Typography>
+                  <Typography noWrap>{contract.description}</Typography>
                 </CardContent>
               </Card>
             </Link>
