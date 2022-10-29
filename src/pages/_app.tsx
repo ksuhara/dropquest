@@ -19,6 +19,7 @@ import type { AppProps } from 'next/app'
 // ** Next Imports
 import Head from 'next/head'
 import { Router } from 'next/router'
+import { SessionProvider } from 'next-auth/react'
 // ** Loader Import
 import NProgress from 'nprogress'
 import { ReactNode, useState } from 'react'
@@ -84,7 +85,11 @@ const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
 
 // ** Configure JSS & ClassName
 const App = (props: ExtendedAppProps) => {
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+  const {
+    Component,
+    emotionCache = clientSideEmotionCache,
+    pageProps: { session, ...pageProps }
+  } = props
 
   const [selectedChain, setSelectedChain] = useState(ChainId.Goerli)
 
@@ -127,26 +132,28 @@ const App = (props: ExtendedAppProps) => {
           }}
         >
           <AuthProvider>
-            <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
-              <SettingsConsumer>
-                {({ settings }) => {
-                  return (
-                    <ThemeComponent settings={settings}>
-                      <WindowWrapper>
-                        {/* <Guard authGuard={authGuard} guestGuard={guestGuard}> */}
-                        {/* <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}> */}
-                        {getLayout(<Component {...pageProps} />)}
-                        {/* </AclGuard> */}
-                        {/* </Guard> */}
-                      </WindowWrapper>
-                      <ReactHotToast>
-                        <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
-                      </ReactHotToast>
-                    </ThemeComponent>
-                  )
-                }}
-              </SettingsConsumer>
-            </SettingsProvider>
+            <SessionProvider session={session}>
+              <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
+                <SettingsConsumer>
+                  {({ settings }) => {
+                    return (
+                      <ThemeComponent settings={settings}>
+                        <WindowWrapper>
+                          {/* <Guard authGuard={authGuard} guestGuard={guestGuard}> */}
+                          {/* <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}> */}
+                          {getLayout(<Component {...pageProps} />)}
+                          {/* </AclGuard> */}
+                          {/* </Guard> */}
+                        </WindowWrapper>
+                        <ReactHotToast>
+                          <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
+                        </ReactHotToast>
+                      </ThemeComponent>
+                    )
+                  }}
+                </SettingsConsumer>
+              </SettingsProvider>
+            </SessionProvider>
           </AuthProvider>
         </ThirdwebProvider>
       </ChainContext.Provider>

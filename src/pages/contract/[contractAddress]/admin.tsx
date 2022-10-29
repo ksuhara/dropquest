@@ -13,22 +13,26 @@ import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Grid from '@mui/material/Grid'
+import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
-import { useContract } from '@thirdweb-dev/react'
+import { useContract, useNFTs } from '@thirdweb-dev/react'
 import { ApexOptions } from 'apexcharts'
-import { doc,getDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import ChevronDown from 'mdi-material-ui/ChevronDown'
 import Circle from 'mdi-material-ui/Circle'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import Ethereum from 'mdi-material-ui/Ethereum'
 import Plus from 'mdi-material-ui/Plus'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 import initializeFirebaseClient from 'src/configs/initFirebase'
@@ -42,15 +46,71 @@ const EditionAdmin = () => {
   const theme = useTheme()
 
   // const sdk = useSDK()
-  // const contractQuery = useContract(contractAddress as string)
+  const contractQuery = useContract(contractAddress as string)
   const edition = useContract(contractAddress as string, 'edition')
 
-  // const { data: nfts } = useNFTs(contractQuery.contract)
+  const { data: nfts } = useNFTs(contractQuery.contract)
 
   const [contractData, setContractData] = useState<any>()
   const [keys, setKeys] = useState<Key[]>([])
   const [rows, setRows] = useState<GridRowsProp>([])
   const [plan, setPlan] = useState(10)
+
+  const [nftGate, setNFTGate] = useState({ contractAddress: '', chainId: 'ethereum', isActive: false })
+  const [twitterGate, setTwitterGate] = useState({ twitterId: '', isActive: false })
+  const handleChangeNFTGate = (e: any) => {
+    if (e.target.name == 'isActive') {
+      setNFTGate(prevState => ({
+        ...prevState,
+        [e.target.name]: e.target.checked
+      }))
+    } else {
+      setNFTGate(prevState => ({
+        ...prevState,
+        [e.target.name]: e.target.value
+      }))
+    }
+  }
+  const saveNFTGate = () => {
+    const docRef = doc(db, 'contracts', contractAddress as string)
+    updateDoc(docRef, {
+      nftGate: nftGate
+    })
+    toast.success('successfully saved!')
+  }
+
+  const handleChangeTwitterGate = (e: any) => {
+    if (e.target.name == 'isActive') {
+      setTwitterGate(prevState => ({
+        ...prevState,
+        [e.target.name]: e.target.checked
+      }))
+    } else {
+      setTwitterGate(prevState => ({
+        ...prevState,
+        [e.target.name]: e.target.value
+      }))
+    }
+  }
+
+  const saveTwitterGate = async () => {
+    const userReq = await fetch(`/api/fetch-twitter-user`, {
+      method: 'POST',
+      body: JSON.stringify({
+        screenName: twitterGate.twitterId
+      })
+    }).catch((e: any) => {
+      toast.error('failed')
+    })
+    if (!userReq) return
+    const userResult = await userReq.json()
+    console.log(userResult)
+    const docRef = doc(db, 'contracts', contractAddress as string)
+    updateDoc(docRef, {
+      twitterGate: { ...twitterGate, id: userResult.id, name: userResult.name, picture: userResult.profile_image_url }
+    })
+    toast.success('successfully saved!')
+  }
 
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
@@ -165,28 +225,30 @@ const EditionAdmin = () => {
       const data = await getDoc(docRef)
       const testData = await data.data()
       setContractData(testData)
+      setNFTGate(testData?.nftGate)
+      setTwitterGate(testData?.twitterGate)
       const validKeys = testData!.keys.filter((key: any) => key.isUsed == false)
       setKeys(validKeys)
     }
     syncData()
   }, [contractAddress])
 
-  // useEffect(() => {
-  //   const syncNfts = async () => {
-  //     console.log(rows)
-  //     const newRows = nfts?.map(nft => {
-  //       return {
-  //         id: nft.metadata.id,
-  //         supply: nft.supply,
-  //         name: nft.metadata.name,
-  //         image: nft.metadata.image
-  //       }
-  //     })
-  //     if (!newRows) return
-  //     setRows(newRows)
-  //   }
-  //   syncNfts()
-  // }, [nfts])
+  useEffect(() => {
+    const syncNfts = async () => {
+      console.log(rows)
+      const newRows = nfts?.map(nft => {
+        return {
+          id: nft.metadata.id,
+          supply: nft.supply,
+          name: nft.metadata.name,
+          image: nft.metadata.image
+        }
+      })
+      if (!newRows) return
+      setRows(newRows)
+    }
+    syncNfts()
+  }, [nfts])
 
   return (
     <>
@@ -209,7 +271,7 @@ const EditionAdmin = () => {
             </Grid>
           </Grid>
           <Grid container spacing={4}>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={5}>
               <Card>
                 <CardHeader
                   title='Mint Tickets Overview'
@@ -233,7 +295,7 @@ const EditionAdmin = () => {
                   }}
                 >
                   <Grid container sx={{ my: [0, 4] }}>
-                    <Grid item xs={12} sm={6} sx={{ mb: [3, 0] }}>
+                    <Grid item xs={12} sm={4} sx={{ mb: [3, 0] }}>
                       <ReactApexcharts
                         type='donut'
                         height={120}
@@ -241,7 +303,7 @@ const EditionAdmin = () => {
                         options={options}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6} sx={{ my: 'auto' }}>
+                    <Grid item xs={12} sm={8} sx={{ my: 'auto' }}>
                       <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Typography variant='body2'>Number of Tickets</Typography>
@@ -331,22 +393,6 @@ const EditionAdmin = () => {
                             </Button>
                           </DialogContent>
                         </Dialog>
-                        {/* <Modal
-                          open={open}
-                          onClose={handleClose}
-                          aria-labelledby='modal-modal-title'
-                          aria-describedby='modal-modal-description'
-                        >
-                          <Card sx={style}>
-                            <Typography variant='h6' component='h2'>
-                              Add Tickets
-                            </Typography>
-                            <Typography sx={{ mt: 2 }}>100 tickets for $5</Typography>
-                            <Button onClick={payment} variant='contained' size='large' sx={{ ml: 4 }}>
-                              Checkout
-                            </Button>
-                          </Card>
-                        </Modal> */}
                       </Box>
                     </Grid>
                   </Grid>
@@ -354,7 +400,7 @@ const EditionAdmin = () => {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={5}>
               <Card>
                 <CardHeader
                   title='Token List'
@@ -370,16 +416,16 @@ const EditionAdmin = () => {
                   >
                     Edit on Thirdweb
                   </Button>
-                  {/* {rows.length ? (
+                  {rows.length ? (
                     <DataGrid autoHeight rows={rows} columns={columns} experimentalFeatures={{ newEditingApi: true }} />
                   ) : (
                     <p>loading</p>
-                  )} */}
+                  )}
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={10}>
               <Card>
                 <CardHeader
                   title='Customize Gates'
@@ -393,14 +439,69 @@ const EditionAdmin = () => {
                       <InputLabel htmlFor='invoice-add-client-notes' sx={{ cursor: 'pointer', fontSize: '1rem' }}>
                         Twitter Follow Gate
                       </InputLabel>
-                      <Switch id='invoice-add-client-notes' disabled />
+                      <Switch
+                        name='isActive'
+                        checked={twitterGate?.isActive}
+                        onChange={handleChangeTwitterGate}
+                        id='invoice-add-client-notes'
+                      />
                     </OptionsWrapper>
+                    <Box sx={{ mb: 8 }}>
+                      <Typography marginBottom={2}>Wafer sesame snaps chocolate bar candy</Typography>
+                      <TextField
+                        value={twitterGate?.twitterId}
+                        onChange={handleChangeTwitterGate}
+                        name='twitterId'
+                        label='Twitter ID'
+                        InputProps={{
+                          startAdornment: <InputAdornment position='start'>@</InputAdornment>
+                        }}
+                        sx={{ mr: 4 }}
+                      />
+                      <Button variant='outlined' onClick={saveTwitterGate}>
+                        save
+                      </Button>
+                    </Box>
                     <OptionsWrapper>
-                      <InputLabel htmlFor='invoice-add-payment-stub' sx={{ cursor: 'pointer', fontSize: '1rem' }}>
+                      <InputLabel htmlFor='invoice-add-payment-stub' sx={{ cursor: 'pointer' }}>
                         NFT Holder Gate
                       </InputLabel>
-                      <Switch id='invoice-add-payment-stub' disabled />
+                      <Switch
+                        name='isActive'
+                        checked={nftGate?.isActive}
+                        onChange={handleChangeNFTGate}
+                        id='invoice-add-payment-stub'
+                      />
                     </OptionsWrapper>
+                    <Box>
+                      <Typography marginBottom={2}>
+                        Wafer sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert
+                        biscuit. Topping soufflé tart sweet croissant.
+                      </Typography>
+                      <TextField
+                        value={nftGate?.contractAddress}
+                        onChange={handleChangeNFTGate}
+                        name='contractAddress'
+                        label='ContractAddress'
+                        sx={{ mr: 4 }}
+                      />
+                      <Select
+                        value={nftGate?.chainId}
+                        onChange={handleChangeNFTGate}
+                        defaultValue={'ethereum'}
+                        label='Chain'
+                        name='chainId'
+                        labelId='uncontrolled-select-label'
+                        sx={{ mr: 4 }}
+                      >
+                        <MenuItem value={'ethereum'}>Ethereum</MenuItem>
+                        <MenuItem value={'polygon'}>Polygon</MenuItem>
+                        <MenuItem value={'avalanche'}>Avalanche</MenuItem>
+                      </Select>
+                      <Button variant='outlined' onClick={saveNFTGate}>
+                        save
+                      </Button>
+                    </Box>
                   </FormGroup>
                 </CardContent>
               </Card>

@@ -142,7 +142,7 @@ const LoginPage = () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((userCredential: { user: any }) => {
         const returnUrl = router.query.returnUrl
-        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+        const redirectURL = returnUrl && returnUrl !== '/home' ? returnUrl : '/'
         router.replace(redirectURL as string)
       })
       .catch(error => {

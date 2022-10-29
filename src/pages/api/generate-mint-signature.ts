@@ -26,7 +26,6 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
     // updatedAt: firestore.FieldValue.serverTimestamp()
   }
 
-  console.log(2)
   const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, 'goerli')
 
   const type = doc.data()!.contractType
