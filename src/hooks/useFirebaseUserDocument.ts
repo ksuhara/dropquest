@@ -1,4 +1,4 @@
-import { collection, doc, DocumentData, onSnapshot, query, where } from 'firebase/firestore'
+import { collectionGroup, doc, DocumentData, onSnapshot, query, where } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
 import initializeFirebaseClient from '../configs/initFirebase'
@@ -28,7 +28,7 @@ export default function useFirebaseDocument() {
           setIsLoading(false)
         })
 
-        const q = query(collection(db, 'contracts'), where('owner', '==', user.uid))
+        const q = query(collectionGroup(db, 'contracts'), where('owner', '==', user.uid))
         const contractListner = onSnapshot(q, async querySnapshot => {
           const a: any = []
           querySnapshot.forEach(doc => {

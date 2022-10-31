@@ -3,7 +3,9 @@ import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
+import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -31,6 +33,18 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
+  const Img = styled('img')(({ theme }) => ({
+    [theme.breakpoints.down('lg')]: {
+      width: '12rem'
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '6rem'
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: '12rem'
+    }
+  }))
+
   return (
     <Grid container spacing={6}>
       {contractsDocument?.length ? (
@@ -54,13 +68,20 @@ const Home = () => {
       {contractsDocument?.map(contract => {
         return (
           <Grid item xs={12} key={contract.contractAddress}>
-            <Link href={`/contract/${contract.contractAddress}/admin`}>
+            <Link href={`/contract/${contract.chain}/${contract.contractAddress}/admin`}>
               <Card>
-                <CardHeader title={contract.name}></CardHeader>
-                <CardContent>
-                  <Typography sx={{ mb: 2 }}>{contract.contractAddress}</Typography>
-                  <Typography noWrap>{contract.description}</Typography>
-                </CardContent>
+                <Grid container>
+                  <Grid item xs={3} md={2}>
+                    <Img src={contract.image} alt='img'></Img>
+                  </Grid>
+                  <Grid item xs={9} md={10}>
+                    <CardHeader title={contract.name} action={<Chip label={`${contract.chain}`} />}></CardHeader>
+                    <CardContent>
+                      <Typography noWrap>{contract.contractAddress}</Typography>
+                      <Typography noWrap>{contract.description}</Typography>
+                    </CardContent>
+                  </Grid>
+                </Grid>
               </Card>
             </Link>
           </Grid>

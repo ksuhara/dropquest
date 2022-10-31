@@ -9,24 +9,30 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
+import FormControl from '@mui/material/FormControl'
 import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 import Step from '@mui/material/Step'
 import StepContent from '@mui/material/StepContent'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
+import { ChainId, useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import useBgColor from 'src/@core/hooks/useBgColor'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import StepperWrapper from 'src/@core/styles/mui/stepper'
+import ChainContext from 'src/context/Chain'
 import FileUploaderSingle from 'src/views/forms/form-elements/file-uploader/FileUploaderSingle'
 import StepperCustomDot from 'src/views/forms/form-wizard/StepperCustomDot'
 
 const CreateContractPage = () => {
+  const { selectedChain, setSelectedChain } = useContext(ChainContext)
   const address = useAddress()
   const connectWithMetamask = useMetamask()
   const sdk = useSDK()
@@ -69,6 +75,11 @@ const CreateContractPage = () => {
     }
   ]
 
+  const chainToName: any = {
+    '5': 'goerli',
+    '80001': 'mumbai'
+  }
+
   const deployContract = async () => {
     setLoading(true)
     handleClickOpen()
@@ -99,11 +110,13 @@ const CreateContractPage = () => {
     setActiveStep(2)
     await edition.erc1155.mintTo(address, tokenMetadata)
     setActiveStep(3)
+
     await fetch(`/api/register-nft-contract`, {
       method: 'POST',
       body: JSON.stringify({
         nftAddress: contractAddress,
-        address
+        address,
+        chain: chainToName[String(selectedChain)]
       })
     })
     setLoading(false)
@@ -124,6 +137,17 @@ const CreateContractPage = () => {
                 The contract is Thridweb's contract, so you can edit in Thirdweb's dashboard.
               </Typography>
             </Alert>
+            <FormControl fullWidth>
+              <InputLabel>Chain</InputLabel>
+              <Select
+                label='Chain'
+                value={String(selectedChain)}
+                onChange={e => setSelectedChain(parseInt(e.target.value))}
+              >
+                <MenuItem value={String(ChainId.Goerli)}>Goerli</MenuItem>
+                <MenuItem value={String(ChainId.Mumbai)}>Mumbai</MenuItem>
+              </Select>
+            </FormControl>
             <TextField onChange={e => setName(e.target.value)} label='Name' fullWidth sx={{ my: 2 }} />
             <TextField
               onChange={e => setDescription(e.target.value)}
@@ -167,7 +191,7 @@ const CreateContractPage = () => {
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id='alert-dialog-title'>{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{'Deploy Contract Steps'}</DialogTitle>
         <DialogContent>
           <Card>
             <CardContent>

@@ -16,7 +16,7 @@ import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
 const ContractQR = () => {
   const router = useRouter()
-  const { contractAddress } = router.query
+  const { contractAddress, chain } = router.query
   const basePath =
     process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://regidrop-frontend.vercel.app/'
   const { user, isLoading: loadingAuth } = useFirebaseUser()
@@ -41,7 +41,7 @@ const ContractQR = () => {
 
     const syncData = async () => {
       if (!contractAddress) return
-      const docRef = doc(db, 'contracts', contractAddress as string)
+      const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
       onSnapshot(docRef, doc => {
         if (doc.exists()) {
           setContractData({
@@ -57,7 +57,7 @@ const ContractQR = () => {
       })
     }
     syncData()
-  }, [contractAddress, db])
+  }, [contractAddress, db, chain])
 
   return (
     <Grid container spacing={4}>
@@ -83,7 +83,7 @@ const ContractQR = () => {
                   created by:{contractAddress}
                 </Typography>
                 <Canvas
-                  text={`${basePath}/contract/${contractAddress}/mint?key=${qrKey}`}
+                  text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${qrKey}`}
                   options={{
                     type: 'image/jpeg',
                     quality: 0.3,
@@ -100,7 +100,7 @@ const ContractQR = () => {
                   {basePath && (
                     <Button
                       variant='contained'
-                      href={`${basePath}/contract/${contractAddress}/edition-mint?key=${qrKey}`}
+                      href={`${basePath}/contract/${chain}/${contractAddress}/edition-mint?key=${qrKey}`}
                       target={'_blank'}
                     >
                       test

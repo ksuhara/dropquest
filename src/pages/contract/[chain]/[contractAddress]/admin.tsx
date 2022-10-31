@@ -10,11 +10,12 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
+import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import { styled } from '@mui/material/styles'
@@ -28,28 +29,31 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import ChevronDown from 'mdi-material-ui/ChevronDown'
 import Circle from 'mdi-material-ui/Circle'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
+import Delete from 'mdi-material-ui/Delete'
+import DotsVertical from 'mdi-material-ui/DotsVertical'
 import Ethereum from 'mdi-material-ui/Ethereum'
 import Plus from 'mdi-material-ui/Plus'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 import initializeFirebaseClient from 'src/configs/initFirebase'
+import ChainContext from 'src/context/Chain'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
 const EditionAdmin = () => {
   const router = useRouter()
-  const { contractAddress } = router.query
+  const { contractAddress, chain } = router.query
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
   const theme = useTheme()
+  const { selectedChain, setSelectedChain } = useContext(ChainContext)
 
-  // const sdk = useSDK()
   const contractQuery = useContract(contractAddress as string)
   const edition = useContract(contractAddress as string, 'edition')
 
-  const { data: nfts } = useNFTs(contractQuery.contract)
+  const { data: nfts, isLoading, error } = useNFTs(contractQuery.contract)
 
   const [contractData, setContractData] = useState<any>()
   const [keys, setKeys] = useState<Key[]>([])
@@ -218,22 +222,34 @@ const EditionAdmin = () => {
     { field: 'supply', headerName: 'supply', type: 'number', width: 100, editable: false }
   ]
 
+  const nameToChainId: any = {
+    goerli: '5',
+    mumbai: '80001'
+  }
+
   useEffect(() => {
     const syncData = async () => {
       if (!contractAddress) return
-      const docRef = doc(db, 'contracts', contractAddress as string)
+      const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
       const data = await getDoc(docRef)
       const testData = await data.data()
       setContractData(testData)
       setNFTGate(testData?.nftGate)
       setTwitterGate(testData?.twitterGate)
+      console.log(testData?.chain, 'testData?.chain')
+      setSelectedChain(nameToChainId[chain as string])
       const validKeys = testData!.keys.filter((key: any) => key.isUsed == false)
       setKeys(validKeys)
     }
     syncData()
-  }, [contractAddress, db])
+  }, [contractAddress, db, chain])
 
   useEffect(() => {
+    // console.log('!!')
+    // console.log(nfts, 'nfts')
+    // console.log(isLoading)
+    // console.log(error, 'error')
+    console.log(selectedChain)
     const syncNfts = async () => {
       const newRows = nfts?.map(nft => {
         return {
@@ -247,7 +263,16 @@ const EditionAdmin = () => {
       setRows(newRows)
     }
     syncNfts()
-  }, [nfts])
+  }, [nfts, selectedChain])
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
 
   return (
     <>
@@ -260,13 +285,22 @@ const EditionAdmin = () => {
             </Grid>
             <Grid item sx={{ mr: 4, my: 4 }}>
               <Button
-                href={`/contract/${contractAddress}/qr`}
+                href={`/contract/${chain}/${contractAddress}/qr`}
                 variant='contained'
                 size='large'
                 disabled={keys.length == 0}
               >
                 qrコード表示
               </Button>
+              <IconButton onClick={handleClick}>
+                <DotsVertical />
+              </IconButton>
+              <Menu anchorEl={anchorEl} onClose={handleMenuClose} open={Boolean(anchorEl)}>
+                <MenuItem>
+                  <Delete />
+                  Delete
+                </MenuItem>
+              </Menu>
             </Grid>
           </Grid>
           <Grid container spacing={4}>
@@ -410,7 +444,7 @@ const EditionAdmin = () => {
                 <CardContent>
                   <Button
                     variant='contained'
-                    href={`https://thirdweb.com/goerli/${contractAddress}/nfts`}
+                    href={`https://thirdweb.com/${chain}/${contractAddress}/nfts`}
                     target={'_blank'}
                   >
                     Edit on Thirdweb
@@ -418,7 +452,7 @@ const EditionAdmin = () => {
                   {rows.length ? (
                     <DataGrid autoHeight rows={rows} columns={columns} experimentalFeatures={{ newEditingApi: true }} />
                   ) : (
-                    <p>loading</p>
+                    <>{isLoading ? <p>loading</p> : <></>}</>
                   )}
                 </CardContent>
               </Card>

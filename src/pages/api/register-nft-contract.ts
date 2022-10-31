@@ -6,15 +6,15 @@ import randomstring from 'randomstring'
 import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
 export default async function registerNFTContract(req: NextApiRequest, res: NextApiResponse) {
-  const { nftAddress, address } = JSON.parse(req.body)
+  const { nftAddress, address, chain } = JSON.parse(req.body)
   const { db } = initializeFirebaseServer()
 
-  const docRef = db.collection('contracts').doc(nftAddress)
+  const docRef = db.collection('chain').doc(chain).collection('contracts').doc(nftAddress)
   const data = await docRef.get()
   if (data.exists) {
     return res.status(400).send({ error: 'already registered' })
   }
-  const sdk = new ThirdwebSDK('goerli')
+  const sdk = new ThirdwebSDK(chain)
   const nftCollection = await sdk.getContract(nftAddress)
   const contractOwner = await nftCollection.owner.get()
   const contractMetadata = await nftCollection.metadata.get()
@@ -49,7 +49,8 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
       owner: address,
       keys: keys,
       createdAt: firestore.FieldValue.serverTimestamp(),
-      contractType: 'edition'
+      contractType: 'edition',
+      chain: chain
     },
     { merge: true }
   )

@@ -104,6 +104,11 @@ const App = (props: ExtendedAppProps) => {
 
   const aclAbilities = Component.acl ?? defaultACLObj
 
+  const relayerUrl = {
+    [String(ChainId.Goerli)]: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL_GOERLI || '',
+    [String(ChainId.Mumbai)]: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL_MUMBAI || ''
+  }
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -121,7 +126,7 @@ const App = (props: ExtendedAppProps) => {
           sdkOptions={{
             gasless: {
               openzeppelin: {
-                relayerUrl: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL || ''
+                relayerUrl: relayerUrl[String(selectedChain)]
               }
             }
           }}

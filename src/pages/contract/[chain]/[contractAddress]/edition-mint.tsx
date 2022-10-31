@@ -32,7 +32,7 @@ import initializeFirebaseClient from 'src/configs/initFirebase'
 
 const Mint: NextPage = () => {
   const router = useRouter()
-  const { key, contractAddress } = router.query
+  const { key, contractAddress, chain } = router.query
 
   const address = useAddress()
   const connectWithMetamask = useMetamask()
@@ -53,7 +53,7 @@ const Mint: NextPage = () => {
   useEffect(() => {
     const syncData = async () => {
       if (!contractAddress) return
-      const docRef = doc(db, 'contracts', contractAddress as string)
+      const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
       const docdata = await getDoc(docRef)
       if (docdata.exists()) {
         setContractData({
@@ -63,7 +63,7 @@ const Mint: NextPage = () => {
       }
     }
     syncData()
-  }, [edition, db, contractAddress])
+  }, [edition, db, contractAddress, chain])
 
   async function claimWithSignature() {
     if (!address) {
