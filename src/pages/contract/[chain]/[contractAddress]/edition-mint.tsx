@@ -65,6 +65,21 @@ const Mint: NextPage = () => {
     syncData()
   }, [edition, db, contractAddress, chain])
 
+  useEffect(() => {
+    if (!contractAddress || !chain || !key) return
+    const changeKeyStatus = async () => {
+      await fetch(`/api/change-key-status`, {
+        method: 'POST',
+        body: JSON.stringify({
+          contractAddress,
+          keyString: key,
+          chain
+        })
+      })
+    }
+    changeKeyStatus()
+  }, [contractAddress, chain, key])
+
   async function claimWithSignature() {
     if (!address) {
       connectWithMetamask()
@@ -83,7 +98,8 @@ const Mint: NextPage = () => {
       body: JSON.stringify({
         minterAddress: address,
         contractAddress,
-        keyString: key
+        keyString: key,
+        chain
       })
     })
 

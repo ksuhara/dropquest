@@ -42,7 +42,7 @@ export default async function stripeWebhook(req: NextApiRequest, res: NextApiRes
     })
     keys.push({
       key: rand,
-      isUsed: false
+      keyStatus: 'stock'
     })
   }
   docRef.update({

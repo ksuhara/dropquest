@@ -20,14 +20,16 @@ import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { ChainId, useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
+import { ChainId, useAddress, useMetamask, useNetwork, useNetworkMismatch, useSDK } from '@thirdweb-dev/react'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useContext, useState } from 'react'
+import toast from 'react-hot-toast'
 import useBgColor from 'src/@core/hooks/useBgColor'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
 import StepperWrapper from 'src/@core/styles/mui/stepper'
 import ChainContext from 'src/context/Chain'
+import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import FileUploaderSingle from 'src/views/forms/form-elements/file-uploader/FileUploaderSingle'
 import StepperCustomDot from 'src/views/forms/form-wizard/StepperCustomDot'
 
@@ -43,6 +45,8 @@ const CreateContractPage = () => {
 
   const [open, setOpen] = useState(false)
 
+  const { user } = useFirebaseUser()
+
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -55,6 +59,9 @@ const CreateContractPage = () => {
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+
+  const isMismatch = useNetworkMismatch()
+  const [, switchNetwork] = useNetwork()
 
   const steps = [
     {
@@ -84,6 +91,12 @@ const CreateContractPage = () => {
     setLoading(true)
     handleClickOpen()
     if (!sdk || !address) return
+    if (isMismatch) {
+      switchNetwork && switchNetwork(selectedChain)
+    }
+
+    const idToken = await user?.getIdToken()
+    console.log(idToken)
 
     const contractMetadata = {
       name,
@@ -94,8 +107,14 @@ const CreateContractPage = () => {
       image: imageURL
     }
 
-    const contractAddress = await sdk.deployer.deployBuiltInContract('edition', contractMetadata)
-    console.log(contractAddress)
+    const contractAddress = await sdk.deployer.deployBuiltInContract('edition', contractMetadata).catch(e => {
+      toast.error(`${e.message}`)
+      setLoading(false)
+      handleClose()
+
+      return
+    })
+    if (!contractAddress) return
     setActiveStep(1)
     const edition = await sdk.getContract(contractAddress, 'edition')
 
@@ -114,10 +133,13 @@ const CreateContractPage = () => {
     await fetch(`/api/register-nft-contract`, {
       method: 'POST',
       body: JSON.stringify({
-        nftAddress: contractAddress,
+        nftAddress: '0x41f47738dCEe72FAc403Cc2D97925b0E2742e752',
         address,
         chain: chainToName[String(selectedChain)]
-      })
+      }),
+      headers: {
+        Authorization: idToken || 'unauthenticated'
+      }
     })
     setLoading(false)
     router.replace('/home')

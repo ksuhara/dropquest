@@ -4,11 +4,11 @@ import type { NextApiRequest, NextApiResponse } from 'next/types'
 import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
 export default async function generateMintSignature(req: NextApiRequest, res: NextApiResponse) {
-  const { minterAddress, contractAddress, keyString } = JSON.parse(req.body)
+  const { minterAddress, contractAddress, keyString, chain } = JSON.parse(req.body)
 
   const { db } = initializeFirebaseServer()
 
-  const docRef = db.collection('contracts').doc(contractAddress)
+  const docRef = db.collection(`chain/${chain}/contracts`).doc(contractAddress)
   const doc = await docRef.get()
   if (!doc.exists) {
     res.status(400).json({
@@ -20,16 +20,14 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
   const key = keys[index]
   keys[index] = {
     key: keyString,
-    isUsed: true,
+    keyStatus: 'signatured',
     minter: minterAddress
-
-    // updatedAt: firestore.FieldValue.serverTimestamp()
   }
 
   const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, 'goerli')
 
   const type = doc.data()!.contractType
-  if (!key.isUsed) {
+  if (key.keyStatus != 'signatured') {
     if (type == 'signature-drop') {
       const signatureDrop = goerliSDK.getSignatureDrop(contractAddress)
 

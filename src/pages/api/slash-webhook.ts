@@ -24,7 +24,7 @@ export default async function slashWebhook(req: NextApiRequest, res: NextApiResp
     })
     keys.push({
       key: rand,
-      isUsed: false
+      keyStaus: 'stock'
     })
   }
   docRef.update({

@@ -91,7 +91,7 @@ const App = (props: ExtendedAppProps) => {
     pageProps: { session, ...pageProps }
   } = props
 
-  const [selectedChain, setSelectedChain] = useState(ChainId.Goerli)
+  const [selectedChain, setSelectedChain] = useState(ChainId.Mumbai)
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)

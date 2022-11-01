@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import DateTimePicker from '@mui/lab/DateTimePicker'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import { useTheme } from '@mui/material'
 import Box, { BoxProps } from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -18,6 +21,7 @@ import InputLabel from '@mui/material/InputLabel'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
@@ -76,9 +80,19 @@ const EditionAdmin = () => {
     }
   }
   const saveNFTGate = () => {
-    const docRef = doc(db, 'contracts', contractAddress as string)
+    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
+
     updateDoc(docRef, {
       nftGate: nftGate
+    })
+    toast.success('successfully saved!')
+  }
+
+  const savePublicTime = () => {
+    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
+    updateDoc(docRef, {
+      startTime: startPicker,
+      endTime: endPicker
     })
     toast.success('successfully saved!')
   }
@@ -109,7 +123,7 @@ const EditionAdmin = () => {
     if (!userReq) return
     const userResult = await userReq.json()
     console.log(userResult)
-    const docRef = doc(db, 'contracts', contractAddress as string)
+    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
     updateDoc(docRef, {
       twitterGate: { ...twitterGate, id: userResult.id, name: userResult.name, picture: userResult.profile_image_url }
     })
@@ -119,6 +133,10 @@ const EditionAdmin = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+
+  const [startPicker, setStartPicker] = useState<Date | null>(new Date())
+  const date = new Date()
+  const [endPicker, setEndPicker] = useState<Date | null>(new Date(date.setMonth(date.getMonth() + 1)))
 
   const options: ApexOptions = {
     chart: {
@@ -164,7 +182,7 @@ const EditionAdmin = () => {
 
   interface Key {
     key: string
-    isUsed: boolean
+    keyStatus: 'stock' | 'pending' | 'signatured'
   }
 
   const payment = async () => {
@@ -236,19 +254,17 @@ const EditionAdmin = () => {
       setContractData(testData)
       setNFTGate(testData?.nftGate)
       setTwitterGate(testData?.twitterGate)
-      console.log(testData?.chain, 'testData?.chain')
       setSelectedChain(nameToChainId[chain as string])
-      const validKeys = testData!.keys.filter((key: any) => key.isUsed == false)
+      const validKeys = testData!.keys.filter((key: any) => key.keyStatus == 'stock')
       setKeys(validKeys)
+      console.log(testData?.startTime.toDate(), 'testData?.startTime')
+      setStartPicker(testData?.startTime.toDate())
+      setEndPicker(testData?.endTime.toDate())
     }
     syncData()
   }, [contractAddress, db, chain])
 
   useEffect(() => {
-    // console.log('!!')
-    // console.log(nfts, 'nfts')
-    // console.log(isLoading)
-    // console.log(error, 'error')
     console.log(selectedChain)
     const syncNfts = async () => {
       const newRows = nfts?.map(nft => {
@@ -432,8 +448,41 @@ const EditionAdmin = () => {
                 </CardContent>
               </Card>
             </Grid>
-
             <Grid item xs={12} md={5}>
+              <Card>
+                <CardHeader
+                  title='Publication'
+                  titleTypographyProps={{
+                    sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+                  }}
+                />
+                <CardContent>
+                  <Stack spacing={4}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DateTimePicker
+                        label='Start Time'
+                        value={startPicker}
+                        onChange={newValue => setStartPicker(newValue)}
+                        renderInput={params => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DateTimePicker
+                        label='End Time'
+                        value={endPicker}
+                        onChange={newValue => setEndPicker(newValue)}
+                        renderInput={params => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                    <Button variant='outlined' onClick={savePublicTime}>
+                      save
+                    </Button>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={10}>
               <Card>
                 <CardHeader
                   title='Token List'

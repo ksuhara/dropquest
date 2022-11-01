@@ -6,8 +6,17 @@ import randomstring from 'randomstring'
 import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
 export default async function registerNFTContract(req: NextApiRequest, res: NextApiResponse) {
+  if (!(req.headers && req.headers.authorization)) {
+    return res.status(400).json({ error: 'Missing Authorization header value' })
+  }
+
   const { nftAddress, address, chain } = JSON.parse(req.body)
-  const { db } = initializeFirebaseServer()
+  const { db, auth } = initializeFirebaseServer()
+  const decoded = await auth.verifyIdToken(req.headers.authorization)
+
+  if (decoded.uid != address) {
+    return res.status(400).json({ error: 'Invalid Authorization header value' })
+  }
 
   const docRef = db.collection('chain').doc(chain).collection('contracts').doc(nftAddress)
   const data = await docRef.get()
@@ -36,9 +45,11 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
     })
     keys.push({
       key: rand,
-      isUsed: false
+      keyStatus: 'stock'
     })
   }
+  const date = new Date()
+  const endTime = new Date(date.setMonth(date.getMonth() + 1))
   docRef.set(
     {
       name: contractMetadata.name,
@@ -50,7 +61,9 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
       keys: keys,
       createdAt: firestore.FieldValue.serverTimestamp(),
       contractType: 'edition',
-      chain: chain
+      chain: chain,
+      startTime: new Date(),
+      endTime: endTime
     },
     { merge: true }
   )

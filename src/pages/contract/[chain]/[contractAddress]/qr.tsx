@@ -25,16 +25,15 @@ const ContractQR = () => {
 
   interface Key {
     key: string
-    isUsed: boolean
+    keyStatus: 'stock' | 'pending' | 'signatured'
   }
 
   const [contractData, setContractData] = useState<any>()
   const [isLoading, setIsLoading] = useState(true)
-  const [qrKey, setQrKey] = useState('')
-
+  const [keys, setKeys] = useState<Key[]>([])
   useEffect(() => {
     const filterValidKeys = (keys: Key[]) => {
-      const result = keys.filter(key => key.isUsed == false)
+      const result = keys.filter(key => key.keyStatus == 'stock')
 
       return result
     }
@@ -48,8 +47,8 @@ const ContractQR = () => {
             ...doc.data(),
             id: doc.id
           })
-          const keys = filterValidKeys(doc.data().keys)
-          setQrKey(keys[0].key)
+          const filteredKeys = filterValidKeys(doc.data().keys)
+          setKeys(filteredKeys)
         } else {
           setContractData(null)
         }
@@ -59,16 +58,23 @@ const ContractQR = () => {
     syncData()
   }, [contractAddress, db, chain])
 
+  useEffect(() => {
+    if (!router.isReady) {
+      return
+    }
+
+    if ((!user && !loadingAuth) || (!user?.uid == contractData?.owner && !loadingAuth)) {
+      router.replace('/login')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadingAuth])
+
   return (
     <Grid container spacing={4}>
       {contractData && user?.uid == contractData.owner && !isLoading ? (
         <>
           <Grid item xs={12} md={6}>
-            {/* <Card sx={{ mx: 'auto' }}>
-              <CardContent> */}
             <img src={contractData.image} width={'100%'} alt='contract image'></img>
-            {/* </CardContent> */}
-            {/* </Card> */}
           </Grid>
           <Grid item xs={12} md={6}>
             <Card sx={{ mx: 'auto', minHeight: '100%' }}>
@@ -82,25 +88,30 @@ const ContractQR = () => {
                 <Typography variant='subtitle2' noWrap>
                   created by:{contractAddress}
                 </Typography>
-                <Canvas
-                  text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${qrKey}`}
-                  options={{
-                    type: 'image/jpeg',
-                    quality: 0.3,
-                    level: 'M',
-                    scale: 4,
-                    width: 360,
-                    color: {
-                      dark: '#9155FD',
-                      light: '#FFF'
-                    }
-                  }}
-                />
+                {keys.length ? (
+                  <Canvas
+                    text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${keys[0]}`}
+                    options={{
+                      type: 'image/jpeg',
+                      quality: 0.3,
+                      level: 'M',
+                      scale: 4,
+                      width: 360,
+                      color: {
+                        dark: '#9155FD',
+                        light: '#FFF'
+                      }
+                    }}
+                  />
+                ) : (
+                  <Typography variant='h4'>Out of Stock</Typography>
+                )}
+
                 <Box>
                   {basePath && (
                     <Button
                       variant='contained'
-                      href={`${basePath}/contract/${chain}/${contractAddress}/edition-mint?key=${qrKey}`}
+                      href={`${basePath}/contract/${chain}/${contractAddress}/edition-mint?key=${keys[0]}`}
                       target={'_blank'}
                     >
                       test
