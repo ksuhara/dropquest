@@ -10,9 +10,10 @@ export default async function slashWebhook(req: NextApiRequest, res: NextApiResp
   console.log(splittedCode, 'splittedCode')
   const contractAddress = splittedCode[0]
   const ticketsAdd = splittedCode[1]
+  const chain = splittedCode[2]
   console.log(result, 'result')
   const { db } = initializeFirebaseServer()
-  const docRef = db.collection('contracts').doc(contractAddress)
+  const docRef = db.collection(`chain/${chain}/contracts`).doc(contractAddress)
   const doc = await docRef.get()
   const keys = doc.data()!.keys
 

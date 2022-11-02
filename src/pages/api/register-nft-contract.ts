@@ -62,8 +62,11 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
       createdAt: firestore.FieldValue.serverTimestamp(),
       contractType: 'edition',
       chain: chain,
-      startTime: new Date(),
-      endTime: endTime
+      visibility: {
+        isPublic: false,
+        startTime: new Date(),
+        endTime: endTime
+      }
     },
     { merge: true }
   )

@@ -9,11 +9,13 @@ import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
+import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
@@ -32,8 +34,6 @@ import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api'
 import { useContract, useNFTs } from '@thirdweb-dev/react'
 import { ApexOptions } from 'apexcharts'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
-import ChevronDown from 'mdi-material-ui/ChevronDown'
-import Circle from 'mdi-material-ui/Circle'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import Delete from 'mdi-material-ui/Delete'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
@@ -64,58 +64,68 @@ const EditionAdmin = () => {
   const [rows, setRows] = useState<GridRowsProp>([])
   const [plan, setPlan] = useState(10)
 
-  const [nftGate, setNFTGate] = useState({ contractAddress: '', chainId: 'ethereum', isActive: false })
-  const [twitterGate, setTwitterGate] = useState({ twitterId: '', isActive: false })
-  const handleChangeNFTGate = (e: any) => {
-    if (e.target.name == 'isActive') {
-      setNFTGate(prevState => ({
-        ...prevState,
-        [e.target.name]: e.target.checked
-      }))
-    } else {
-      setNFTGate(prevState => ({
-        ...prevState,
-        [e.target.name]: e.target.value
-      }))
+  const [startPicker, setStartPicker] = useState<Date | null>(new Date())
+  const date = new Date()
+  const [endPicker, setEndPicker] = useState<Date | null>(new Date(date.setMonth(date.getMonth() + 1)))
+  const [isTwitterIdChanged, setIsTwitterIdChanged] = useState(false)
+  const [adminEditData, setAdminEditData] = useState({
+    twitterGate: { twitterId: '', isActive: false },
+    nftGate: { contractAddress: '', chainId: 'ethereum', isActive: false },
+    location: { name: '', latLng: { lat: 35.66, lng: 139.71 }, isActive: false },
+    visibility: { isPublic: false }
+  })
+  const handleChanges = (e: any) => {
+    console.log(e.target)
+    if (e.target.name == 'twitterGate-twitterId') {
+      setIsTwitterIdChanged(true)
     }
-  }
-  const saveNFTGate = () => {
-    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
-
-    updateDoc(docRef, {
-      nftGate: nftGate
-    })
-    toast.success('successfully saved!')
-  }
-
-  const savePublicTime = () => {
-    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
-    updateDoc(docRef, {
-      startTime: startPicker,
-      endTime: endPicker
-    })
-    toast.success('successfully saved!')
-  }
-
-  const handleChangeTwitterGate = (e: any) => {
-    if (e.target.name == 'isActive') {
-      setTwitterGate(prevState => ({
+    const splitted = e.target.name.split('-')
+    if (splitted[1] == 'isActive' || splitted[1] == 'isPublic') {
+      setAdminEditData((prevState: any) => ({
         ...prevState,
-        [e.target.name]: e.target.checked
+        [splitted[0]]: {
+          ...prevState[splitted[0]],
+          [splitted[1]]: e.target.checked
+        }
       }))
     } else {
-      setTwitterGate(prevState => ({
+      setAdminEditData((prevState: any) => ({
         ...prevState,
-        [e.target.name]: e.target.value
+        [splitted[0]]: {
+          ...prevState[splitted[0]],
+          [splitted[1]]: e.target.value
+        }
       }))
     }
   }
 
-  const saveTwitterGate = async () => {
+  const saveGate = async () => {
+    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
+
+    let twitter
+    if (isTwitterIdChanged) {
+      twitter = await verifyTwitterGate()
+      setIsTwitterIdChanged(false)
+    }
+
+    updateDoc(docRef, {
+      nftGate: adminEditData.nftGate,
+      twitterGate: twitter ? twitter : adminEditData.twitterGate,
+      location: adminEditData.location,
+      visibility: {
+        isPublic: adminEditData.visibility.isPublic,
+        startTime: startPicker,
+        endTime: endPicker
+      }
+    })
+    toast.success('successfully saved!')
+  }
+
+  const verifyTwitterGate = async () => {
     const userReq = await fetch(`/api/fetch-twitter-user`, {
       method: 'POST',
       body: JSON.stringify({
-        screenName: twitterGate.twitterId
+        screenName: adminEditData.twitterGate.twitterId
       })
     }).catch((e: any) => {
       toast.error('failed')
@@ -123,20 +133,19 @@ const EditionAdmin = () => {
     if (!userReq) return
     const userResult = await userReq.json()
     console.log(userResult)
-    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
-    updateDoc(docRef, {
-      twitterGate: { ...twitterGate, id: userResult.id, name: userResult.name, picture: userResult.profile_image_url }
-    })
-    toast.success('successfully saved!')
+    const result = {
+      ...adminEditData.twitterGate,
+      id: userResult.id,
+      name: userResult.name,
+      picture: userResult.profile_image_url
+    }
+
+    return result
   }
 
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-
-  const [startPicker, setStartPicker] = useState<Date | null>(new Date())
-  const date = new Date()
-  const [endPicker, setEndPicker] = useState<Date | null>(new Date(date.setMonth(date.getMonth() + 1)))
 
   const options: ApexOptions = {
     chart: {
@@ -190,7 +199,8 @@ const EditionAdmin = () => {
       method: 'POST',
       body: JSON.stringify({
         contractAddress,
-        plan
+        plan,
+        chain
       })
     }).then(data => data.json())
     if (response.customer_id) {
@@ -253,7 +263,7 @@ const EditionAdmin = () => {
   const {
     ready,
     value,
-    setValue,
+    setValue: setMapName,
     suggestions: { status, data },
     clearSuggestions
   } = usePlacesAutocomplete()
@@ -270,13 +280,17 @@ const EditionAdmin = () => {
       const data = await getDoc(docRef)
       const testData = await data.data()
       setContractData(testData)
-      setNFTGate(testData?.nftGate)
-      setTwitterGate(testData?.twitterGate)
+      setAdminEditData({
+        twitterGate: testData?.twitterGate,
+        nftGate: testData?.nftGate,
+        location: testData?.location,
+        visibility: testData?.visibility
+      })
       setSelectedChain(nameToChainId[chain as string])
       const validKeys = testData!.keys.filter((key: any) => key.keyStatus == 'stock')
       setKeys(validKeys)
-      setStartPicker(testData?.startTime?.toDate())
-      setEndPicker(testData?.endTime?.toDate())
+      setStartPicker(testData?.visibility?.startTime?.toDate())
+      setEndPicker(testData?.visibility?.endTime?.toDate())
     }
     syncData()
   }, [contractAddress, db, chain])
@@ -307,26 +321,20 @@ const EditionAdmin = () => {
     setAnchorEl(null)
   }
 
-  const [selectedLatLng, setSelectedLatLng] = useState<any>(null)
   const handleMapSelect = async (address: any) => {
     console.log(address)
-    setValue(address, false)
+    setMapName(address, false)
     clearSuggestions()
     const geocode = await getGeocode({ address })
     console.log(geocode)
     const { lat, lng } = await getLatLng(geocode[0])
-    setSelectedLatLng({ lat, lng })
-  }
-
-  const saveLocation = async () => {
-    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
-    updateDoc(docRef, {
+    setAdminEditData((prevState: any) => ({
+      ...prevState,
       location: {
         name: value,
-        latLng: selectedLatLng
+        latLng: { lat, lng }
       }
-    })
-    toast.success('successfully saved!')
+    }))
   }
 
   return (
@@ -490,13 +498,27 @@ const EditionAdmin = () => {
             <Grid item xs={12} md={5}>
               <Card>
                 <CardHeader
-                  title='Publication'
+                  title='Release Setting'
                   titleTypographyProps={{
                     sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
                   }}
                 />
                 <CardContent>
                   <Stack spacing={4}>
+                    <Box>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            size='medium'
+                            checked={adminEditData.visibility?.isPublic}
+                            onChange={handleChanges}
+                            name='visibility-isPublic'
+                          />
+                        }
+                        labelPlacement='start'
+                        label='Make it public?'
+                      />
+                    </Box>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DateTimePicker
                         label='Start Time'
@@ -509,13 +531,10 @@ const EditionAdmin = () => {
                       <DateTimePicker
                         label='End Time'
                         value={endPicker}
-                        onChange={newValue => setEndPicker(newValue)}
+                        onChange={setEndPicker}
                         renderInput={params => <TextField {...params} />}
                       />
                     </LocalizationProvider>
-                    <Button variant='outlined' onClick={savePublicTime}>
-                      save
-                    </Button>
                   </Stack>
                 </CardContent>
               </Card>
@@ -524,38 +543,135 @@ const EditionAdmin = () => {
             <Grid item xs={12} md={10}>
               <Card>
                 <CardHeader title='Location'></CardHeader>
-                {isLoaded ? (
-                  <>
-                    <Grid container>
+                <CardContent>
+                  {isLoaded ? (
+                    <>
+                      <Typography marginBottom={2}>Twitter Follow Gate</Typography>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            size='medium'
+                            checked={adminEditData.location?.isActive}
+                            onChange={handleChanges}
+                            name='location-isActive'
+                          />
+                        }
+                        labelPlacement='start'
+                        label='Real Event?'
+                      />
                       <Autocomplete
-                        sx={{ width: 350, ml: 2 }}
+                        sx={{ width: 350, mb: 2 }}
                         options={data}
                         id='autocomplete-outlined'
                         getOptionLabel={option => option.description}
                         renderInput={params => (
-                          <TextField {...params} label='Search Place' onChange={e => setValue(e.target.value)} />
+                          <TextField {...params} label='Search Place' onChange={e => setMapName(e.target.value)} />
                         )}
                         disabled={!ready}
                         onSelect={(e: any) => handleMapSelect(e.target.value)}
                       />
-                      <Button variant='outlined' onClick={saveLocation} sx={{ ml: 2 }}>
-                        save
-                      </Button>
-                    </Grid>
-                    <Box m={2}>
+
                       <GoogleMap
                         zoom={13}
-                        center={selectedLatLng ? selectedLatLng : { lat: 35.66, lng: 139.71 }}
+                        center={
+                          adminEditData?.location?.latLng ? adminEditData?.location.latLng : { lat: 35.66, lng: 139.71 }
+                        }
                         mapContainerStyle={containerStyle}
+                        options={{ disableDefaultUI: true }}
                       >
-                        {selectedLatLng ? <Marker position={selectedLatLng}></Marker> : <></>}
+                        {adminEditData?.location?.latLng ? (
+                          <Marker position={adminEditData?.location.latLng}></Marker>
+                        ) : (
+                          <></>
+                        )}
                       </GoogleMap>
-                    </Box>
-                  </>
-                ) : (
-                  <>loading...</>
-                )}
+                    </>
+                  ) : (
+                    <>loading...</>
+                  )}
+                </CardContent>
               </Card>
+            </Grid>
+
+            <Grid item xs={12} md={10}>
+              <Card>
+                <CardHeader
+                  title='Customize Conditions'
+                  titleTypographyProps={{
+                    sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+                  }}
+                />
+                <CardContent>
+                  <FormGroup>
+                    <OptionsWrapper sx={{ mb: 1 }}>
+                      <InputLabel htmlFor='invoice-add-client-notes' sx={{ cursor: 'pointer', fontSize: '1rem' }}>
+                        Twitter Follow Gate
+                      </InputLabel>
+                      <Switch
+                        checked={adminEditData.twitterGate?.isActive}
+                        onChange={handleChanges}
+                        name='twitterGate-isActive'
+                      />
+                    </OptionsWrapper>
+                    <Box sx={{ mb: 8 }}>
+                      <Typography marginBottom={2}>Wafer sesame snaps chocolate bar candy</Typography>
+                      <TextField
+                        value={adminEditData.twitterGate?.twitterId}
+                        onChange={handleChanges}
+                        name='twitterGate-twitterId'
+                        label='Twitter ID'
+                        InputProps={{
+                          startAdornment: <InputAdornment position='start'>@</InputAdornment>
+                        }}
+                        sx={{ mr: 4 }}
+                      />
+                    </Box>
+                    <OptionsWrapper>
+                      <InputLabel htmlFor='invoice-add-payment-stub' sx={{ cursor: 'pointer' }}>
+                        NFT Holder Gate
+                      </InputLabel>
+                      <Switch
+                        checked={adminEditData.nftGate?.isActive}
+                        onChange={handleChanges}
+                        name='nftGate-isActive'
+                      />
+                    </OptionsWrapper>
+                    <Box>
+                      <Typography marginBottom={2}>
+                        Wafer sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert
+                        biscuit. Topping soufflé tart sweet croissant.
+                      </Typography>
+                      <TextField
+                        value={adminEditData.nftGate?.contractAddress}
+                        onChange={handleChanges}
+                        name='nftGate-contractAddress'
+                        label='ContractAddress'
+                        sx={{ mr: 4, width: 300 }}
+                      />
+                      <Select
+                        value={adminEditData.nftGate?.chainId}
+                        onChange={handleChanges}
+                        defaultValue={'ethereum'}
+                        label='Chain'
+                        name='nftGate-chainId'
+                        sx={{ mr: 4 }}
+                      >
+                        <MenuItem value={'ethereum'} id='aaaa-chainId'>
+                          Ethereum
+                        </MenuItem>
+                        <MenuItem value={'polygon'}>Polygon</MenuItem>
+                        <MenuItem value={'avalanche'}>Avalanche</MenuItem>
+                      </Select>
+                    </Box>
+                  </FormGroup>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={10}>
+              <Button fullWidth variant='contained' onClick={saveGate}>
+                save
+              </Button>
             </Grid>
 
             <Grid item xs={12} md={10}>
@@ -582,92 +698,12 @@ const EditionAdmin = () => {
                 </CardContent>
               </Card>
             </Grid>
-
-            <Grid item xs={12} md={10}>
-              <Card>
-                <CardHeader
-                  title='Customize Gates'
-                  titleTypographyProps={{
-                    sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
-                  }}
-                />
-                <CardContent>
-                  <FormGroup>
-                    <OptionsWrapper sx={{ mb: 1 }}>
-                      <InputLabel htmlFor='invoice-add-client-notes' sx={{ cursor: 'pointer', fontSize: '1rem' }}>
-                        Twitter Follow Gate
-                      </InputLabel>
-                      <Switch
-                        name='isActive'
-                        checked={twitterGate?.isActive}
-                        onChange={handleChangeTwitterGate}
-                        id='invoice-add-client-notes'
-                      />
-                    </OptionsWrapper>
-                    <Box sx={{ mb: 8 }}>
-                      <Typography marginBottom={2}>Wafer sesame snaps chocolate bar candy</Typography>
-                      <TextField
-                        value={twitterGate?.twitterId}
-                        onChange={handleChangeTwitterGate}
-                        name='twitterId'
-                        label='Twitter ID'
-                        InputProps={{
-                          startAdornment: <InputAdornment position='start'>@</InputAdornment>
-                        }}
-                        sx={{ mr: 4 }}
-                      />
-                      <Button variant='outlined' onClick={saveTwitterGate}>
-                        save
-                      </Button>
-                    </Box>
-                    <OptionsWrapper>
-                      <InputLabel htmlFor='invoice-add-payment-stub' sx={{ cursor: 'pointer' }}>
-                        NFT Holder Gate
-                      </InputLabel>
-                      <Switch
-                        name='isActive'
-                        checked={nftGate?.isActive}
-                        onChange={handleChangeNFTGate}
-                        id='invoice-add-payment-stub'
-                      />
-                    </OptionsWrapper>
-                    <Box>
-                      <Typography marginBottom={2}>
-                        Wafer sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert
-                        biscuit. Topping soufflé tart sweet croissant.
-                      </Typography>
-                      <TextField
-                        value={nftGate?.contractAddress}
-                        onChange={handleChangeNFTGate}
-                        name='contractAddress'
-                        label='ContractAddress'
-                        sx={{ mr: 4 }}
-                      />
-                      <Select
-                        value={nftGate?.chainId}
-                        onChange={handleChangeNFTGate}
-                        defaultValue={'ethereum'}
-                        label='Chain'
-                        name='chainId'
-                        labelId='uncontrolled-select-label'
-                        sx={{ mr: 4 }}
-                      >
-                        <MenuItem value={'ethereum'}>Ethereum</MenuItem>
-                        <MenuItem value={'polygon'}>Polygon</MenuItem>
-                        <MenuItem value={'avalanche'}>Avalanche</MenuItem>
-                      </Select>
-                      <Button variant='outlined' onClick={saveNFTGate}>
-                        save
-                      </Button>
-                    </Box>
-                  </FormGroup>
-                </CardContent>
-              </Card>
-            </Grid>
           </Grid>
         </>
       ) : (
-        <>Contract Owner can </>
+        <>
+          <CircularProgress />
+        </>
       )}
     </>
   )

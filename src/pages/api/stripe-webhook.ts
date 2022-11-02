@@ -17,6 +17,7 @@ export const config = {
 }
 
 export default async function stripeWebhook(req: NextApiRequest, res: NextApiResponse) {
+  console.log('webhook')
   const sig = req.headers['stripe-signature'] as string
 
   const buf = await buffer(req)
@@ -30,7 +31,7 @@ export default async function stripeWebhook(req: NextApiRequest, res: NextApiRes
   const parsedBody = JSON.parse(buf.toString())
   const metadata = parsedBody.data.object.metadata
   const { db } = initializeFirebaseServer()
-  const docRef = db.collection('contracts').doc(metadata.contractAddress)
+  const docRef = db.collection(`chain/${metadata.chain}/contracts`).doc(metadata.contractAddress)
   const doc = await docRef.get()
   const keys = doc.data()!.keys
   const ticketsAdd = metadata.plan

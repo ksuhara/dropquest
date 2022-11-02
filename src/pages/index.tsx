@@ -50,8 +50,8 @@ const LP = () => {
   useEffect(() => {
     if (!contractsDocument) return
 
-    const filteredOngoing = contractsDocument.filter(contract => contract.endTime?.toDate() > new Date())
-    const filteredPast = contractsDocument.filter(contract => contract.endTime?.toDate() <= new Date())
+    const filteredOngoing = contractsDocument.filter(contract => contract.visibility?.endTime?.toDate() > new Date())
+    const filteredPast = contractsDocument.filter(contract => contract.visibility?.endTime?.toDate() <= new Date())
 
     setOngoingEvent(filteredOngoing)
     setPastEvent(filteredPast)
@@ -89,8 +89,8 @@ const LP = () => {
                             <Grid container alignItems={'center'}>
                               <Calendar />
                               <Typography>
-                                {contract.startTime ? formatDate(contract.startTime?.toDate()) : '?'} ~{' '}
-                                {contract.endTime ? formatDate(contract.endTime?.toDate()) : '?'}
+                                {contract.startTime ? formatDate(contract.visibility?.startTime?.toDate()) : '?'} ~{' '}
+                                {contract.endTime ? formatDate(contract.visibility?.endTime?.toDate()) : '?'}
                               </Typography>
                             </Grid>
                           </Grid>

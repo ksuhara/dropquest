@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 export default async function stripeCheckout(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { contractAddress, plan } = JSON.parse(req.body)
+      const { contractAddress, plan, chain } = JSON.parse(req.body)
       const session = await stripe.checkout.sessions.create({
         line_items: [
           {
@@ -21,7 +21,8 @@ export default async function stripeCheckout(req: NextApiRequest, res: NextApiRe
         cancel_url: `${req.headers.origin}/?canceled=true`,
         metadata: {
           contractAddress,
-          plan
+          plan,
+          chain
         }
       })
 
