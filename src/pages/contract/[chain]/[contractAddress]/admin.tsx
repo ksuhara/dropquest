@@ -2,7 +2,8 @@
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import DateTimePicker from '@mui/lab/DateTimePicker'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import { useTheme } from '@mui/material'
+import { useMediaQuery, useTheme } from '@mui/material'
+import Autocomplete from '@mui/material/Autocomplete'
 import Box, { BoxProps } from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -27,6 +28,7 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api'
 import { useContract, useNFTs } from '@thirdweb-dev/react'
 import { ApexOptions } from 'apexcharts'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
@@ -45,6 +47,7 @@ import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import ChainContext from 'src/context/Chain'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
+import usePlacesAutocomplete, { getDetails, getGeocode, getLatLng } from 'use-places-autocomplete'
 
 const EditionAdmin = () => {
   const router = useRouter()
@@ -53,11 +56,8 @@ const EditionAdmin = () => {
   const { db } = initializeFirebaseClient()
   const theme = useTheme()
   const { selectedChain, setSelectedChain } = useContext(ChainContext)
-
   const contractQuery = useContract(contractAddress as string)
-  const edition = useContract(contractAddress as string, 'edition')
-
-  const { data: nfts, isLoading, error } = useNFTs(contractQuery.contract)
+  const { data: nfts, isLoading } = useNFTs(contractQuery.contract)
 
   const [contractData, setContractData] = useState<any>()
   const [keys, setKeys] = useState<Key[]>([])
@@ -245,6 +245,24 @@ const EditionAdmin = () => {
     mumbai: '80001'
   }
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '',
+    libraries: ['places']
+  })
+  const matches: boolean = useMediaQuery('(min-width:577px)')
+  const {
+    ready,
+    value,
+    setValue,
+    suggestions: { status, data },
+    clearSuggestions
+  } = usePlacesAutocomplete()
+
+  const containerStyle = {
+    width: matches ? '40rem' : '20rem',
+    height: matches ? '300px' : '200px'
+  }
+
   useEffect(() => {
     const syncData = async () => {
       if (!contractAddress) return
@@ -257,9 +275,8 @@ const EditionAdmin = () => {
       setSelectedChain(nameToChainId[chain as string])
       const validKeys = testData!.keys.filter((key: any) => key.keyStatus == 'stock')
       setKeys(validKeys)
-      console.log(testData?.startTime.toDate(), 'testData?.startTime')
-      setStartPicker(testData?.startTime.toDate())
-      setEndPicker(testData?.endTime.toDate())
+      setStartPicker(testData?.startTime?.toDate())
+      setEndPicker(testData?.endTime?.toDate())
     }
     syncData()
   }, [contractAddress, db, chain])
@@ -288,6 +305,28 @@ const EditionAdmin = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null)
+  }
+
+  const [selectedLatLng, setSelectedLatLng] = useState<any>(null)
+  const handleMapSelect = async (address: any) => {
+    console.log(address)
+    setValue(address, false)
+    clearSuggestions()
+    const geocode = await getGeocode({ address })
+    console.log(geocode)
+    const { lat, lng } = await getLatLng(geocode[0])
+    setSelectedLatLng({ lat, lng })
+  }
+
+  const saveLocation = async () => {
+    const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
+    updateDoc(docRef, {
+      location: {
+        name: value,
+        latLng: selectedLatLng
+      }
+    })
+    toast.success('successfully saved!')
   }
 
   return (
@@ -479,6 +518,43 @@ const EditionAdmin = () => {
                     </Button>
                   </Stack>
                 </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={10}>
+              <Card>
+                <CardHeader title='Location'></CardHeader>
+                {isLoaded ? (
+                  <>
+                    <Grid container>
+                      <Autocomplete
+                        sx={{ width: 350, ml: 2 }}
+                        options={data}
+                        id='autocomplete-outlined'
+                        getOptionLabel={option => option.description}
+                        renderInput={params => (
+                          <TextField {...params} label='Search Place' onChange={e => setValue(e.target.value)} />
+                        )}
+                        disabled={!ready}
+                        onSelect={(e: any) => handleMapSelect(e.target.value)}
+                      />
+                      <Button variant='outlined' onClick={saveLocation} sx={{ ml: 2 }}>
+                        save
+                      </Button>
+                    </Grid>
+                    <Box m={2}>
+                      <GoogleMap
+                        zoom={13}
+                        center={selectedLatLng ? selectedLatLng : { lat: 35.66, lng: 139.71 }}
+                        mapContainerStyle={containerStyle}
+                      >
+                        {selectedLatLng ? <Marker position={selectedLatLng}></Marker> : <></>}
+                      </GoogleMap>
+                    </Box>
+                  </>
+                ) : (
+                  <>loading...</>
+                )}
               </Card>
             </Grid>
 

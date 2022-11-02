@@ -18,7 +18,7 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 // ** Next Import
 import { useRouter } from 'next/router'
-import { Fragment,SyntheticEvent, useState } from 'react'
+import { Fragment, SyntheticEvent, useState } from 'react'
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
 import initializeFirebaseClient from 'src/configs/initFirebase'
@@ -79,7 +79,7 @@ const UserDropdown = (props: Props) => {
 
   const handleLogout = () => {
     signOut(auth)
-    router.push('/login')
+    router.push('/login?returnUrl=home')
     handleDropdownClose()
   }
 

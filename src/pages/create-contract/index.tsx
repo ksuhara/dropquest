@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography'
 import { ChainId, useAddress, useMetamask, useNetwork, useNetworkMismatch, useSDK } from '@thirdweb-dev/react'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import useBgColor from 'src/@core/hooks/useBgColor'
 import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
@@ -45,7 +45,7 @@ const CreateContractPage = () => {
 
   const [open, setOpen] = useState(false)
 
-  const { user } = useFirebaseUser()
+  const { user, isLoading } = useFirebaseUser()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -62,6 +62,17 @@ const CreateContractPage = () => {
 
   const isMismatch = useNetworkMismatch()
   const [, switchNetwork] = useNetwork()
+
+  useEffect(() => {
+    if (!router.isReady) {
+      return
+    }
+
+    if (!user && !isLoading) {
+      router.replace('/login?returnUrl=create-contract')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
 
   const steps = [
     {

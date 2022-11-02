@@ -9,7 +9,6 @@ export default async function stripeCheckout(req: NextApiRequest, res: NextApiRe
   if (req.method === 'POST') {
     try {
       const { contractAddress, plan } = JSON.parse(req.body)
-      console.log(contractAddress, 'contractAddress')
       const session = await stripe.checkout.sessions.create({
         line_items: [
           {
@@ -25,8 +24,6 @@ export default async function stripeCheckout(req: NextApiRequest, res: NextApiRe
           plan
         }
       })
-
-      console.log(session, 'sssss')
 
       return res.status(200).json({
         session_id: session.id,

@@ -15,9 +15,7 @@ import useFirebaseDocument from 'src/hooks/useFirebaseUserDocument'
 
 const Home = () => {
   // const address = useAddress()
-
   const { contractsDocument } = useFirebaseDocument()
-  console.log(contractsDocument, 'contractsDocument')
   // ** Hooks
   const { user, isLoading } = useFirebaseUser()
   const router = useRouter()
@@ -28,7 +26,7 @@ const Home = () => {
     }
 
     if (!user && !isLoading) {
-      router.replace('/login')
+      router.replace('/login?returnUrl=home')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
