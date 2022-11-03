@@ -11,11 +11,11 @@ export default async function verifyTwitterGate(req: NextApiRequest, res: NextAp
   console.log(token)
   console.log(session)
 
-  const { contractAddress } = JSON.parse(req.body)
+  const { contractAddress, chain } = JSON.parse(req.body)
   const { db } = initializeFirebaseServer()
   console.log(contractAddress)
 
-  const docRef = db.collection('contracts').doc(contractAddress)
+  const docRef = db.collection(`chain/${chain}/contracts`).doc(contractAddress)
   const document = await docRef.get()
   if (!document.exists) {
     return res.status(400).send({ error: 'no such data' })

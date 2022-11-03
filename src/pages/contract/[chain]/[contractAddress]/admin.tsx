@@ -9,6 +9,7 @@ import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
+import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
@@ -251,8 +252,8 @@ const EditionAdmin = () => {
   ]
 
   const nameToChainId: any = {
-    goerli: '5',
-    mumbai: '80001'
+    goerli: 5,
+    mumbai: 80001
   }
 
   const { isLoaded } = useLoadScript({
@@ -344,7 +345,10 @@ const EditionAdmin = () => {
           <Grid container justifyContent='space-between' sx={{ my: 4 }}>
             <Grid item>
               <Typography variant='h2'>{contractData.name}</Typography>
-              <Typography variant='subtitle1'>{contractAddress}</Typography>
+              <Grid container sx={{ marginTop: 2, alignItems: 'center' }}>
+                <Typography variant='subtitle1'>{contractAddress}</Typography>
+                <Chip label={`${chain}`} size={'medium'} sx={{ ml: 2 }} />
+              </Grid>
             </Grid>
             <Grid item sx={{ mr: 4, my: 4 }}>
               <Button

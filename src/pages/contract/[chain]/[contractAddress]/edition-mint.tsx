@@ -26,9 +26,10 @@ import Twitter from 'mdi-material-ui/Twitter'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import initializeFirebaseClient from 'src/configs/initFirebase'
+import ChainContext from 'src/context/Chain'
 
 const Mint: NextPage = () => {
   const router = useRouter()
@@ -37,8 +38,9 @@ const Mint: NextPage = () => {
   const address = useAddress()
   const connectWithMetamask = useMetamask()
   const disconnect = useDisconnect()
+  const { selectedChain, setSelectedChain } = useContext(ChainContext)
   const isMismatch = useNetworkMismatch()
-  const [, switchNetwork] = useNetwork()
+  const [test, switchNetwork] = useNetwork()
   const { data: session } = useSession()
 
   const edition = useContract(contractAddress as string, 'edition')
@@ -49,6 +51,17 @@ const Mint: NextPage = () => {
   const [isNFTGateVerified, setIsNFTGateVerified] = useState(false)
   const [twitterGateStatus, setTwitterGateStatus] = useState('none')
   const [isTwitterGateVerified, setIsTwitterGateVerified] = useState(false)
+  const [isLoadinSignature, setIsLoadingSignature] = useState(false)
+
+  const connectAndNetwork = () => {
+    connectWithMetamask()
+    if (switchNetwork) switchNetwork(nameToChainId[chain as string] as number)
+  }
+
+  const nameToChainId: any = {
+    goerli: 5,
+    mumbai: 80001
+  }
 
   useEffect(() => {
     const syncData = async () => {
@@ -64,6 +77,12 @@ const Mint: NextPage = () => {
     }
     syncData()
   }, [edition, db, contractAddress, chain])
+
+  useEffect(() => {
+    console.log(test.data.chain)
+    console.log(nameToChainId[chain as string])
+    setSelectedChain(nameToChainId[chain as string])
+  }, [chain])
 
   useEffect(() => {
     if (!contractAddress || !chain || !key) return
@@ -87,11 +106,7 @@ const Mint: NextPage = () => {
       return
     }
 
-    if (isMismatch) {
-      switchNetwork && switchNetwork(ChainId.Goerli)
-
-      return
-    }
+    setIsLoadingSignature(true)
 
     const signedPayloadReq = await fetch(`/api/generate-mint-signature`, {
       method: 'POST',
@@ -105,17 +120,19 @@ const Mint: NextPage = () => {
 
     if (signedPayloadReq.status === 400) {
       toast.error('error occured')
+      setIsLoadingSignature(false)
 
       return
     } else {
       try {
         const signedPayload = (await signedPayloadReq.json()) as SignedPayload1155
-
+        console.log(edition.contract)
         const tx = await edition.contract?.signature.mint(signedPayload)
-
+        setIsLoadingSignature(false)
         toast.success(`Succesfully minted NFT!`)
       } catch (error: any) {
         toast.error(error?.message)
+        setIsLoadingSignature(false)
       }
     }
   }
@@ -132,6 +149,7 @@ const Mint: NextPage = () => {
     })
     if (verifyReq.status === 400) {
       toast.error('failed')
+      setIsNFTGateVerified(false)
       setNFTGateStatus('done')
 
       return
@@ -153,12 +171,21 @@ const Mint: NextPage = () => {
     const verifyReq = await fetch(`/api/verify-twitter-gate`, {
       method: 'POST',
       body: JSON.stringify({
-        contractAddress
+        contractAddress,
+        chain
       })
     })
-    const verifyResult = await verifyReq.json()
-    setIsTwitterGateVerified(verifyResult)
-    setTwitterGateStatus('done')
+    if (verifyReq.status === 400) {
+      toast.error('failed')
+      setIsTwitterGateVerified(false)
+      setTwitterGateStatus('done')
+
+      return
+    } else {
+      const verifyResult = await verifyReq.json()
+      setIsTwitterGateVerified(verifyResult)
+      setTwitterGateStatus('done')
+    }
   }
 
   return (
@@ -282,8 +309,9 @@ const Mint: NextPage = () => {
               </>
 
               {address && contractData ? (
-                <Button
+                <LoadingButton
                   fullWidth
+                  loading={isLoadinSignature}
                   disabled={
                     (contractData?.nftGate?.isActive && !isNFTGateVerified) ||
                     (contractData?.twitterGate?.isActive && !isTwitterGateVerified)
@@ -293,9 +321,9 @@ const Mint: NextPage = () => {
                   size='large'
                 >
                   claim
-                </Button>
+                </LoadingButton>
               ) : (
-                <Button fullWidth onClick={() => connectWithMetamask()} variant='contained' size='large'>
+                <Button fullWidth onClick={() => connectAndNetwork()} variant='contained' size='large'>
                   Connect Wallet
                 </Button>
               )}

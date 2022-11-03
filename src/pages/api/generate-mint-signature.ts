@@ -5,7 +5,6 @@ import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
 export default async function generateMintSignature(req: NextApiRequest, res: NextApiResponse) {
   const { minterAddress, contractAddress, keyString, chain } = JSON.parse(req.body)
-
   const { db } = initializeFirebaseServer()
 
   const docRef = db.collection(`chain/${chain}/contracts`).doc(contractAddress)
@@ -16,6 +15,7 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
     })
   }
   const keys = doc.data()!.keys
+
   const index = keys.findIndex((element: any) => element.key == keyString)
   const key = keys[index]
   keys[index] = {
@@ -24,7 +24,7 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
     minter: minterAddress
   }
 
-  const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, 'goerli')
+  const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, chain)
 
   const type = doc.data()!.contractType
   if (key.keyStatus != 'signatured') {
@@ -43,14 +43,17 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
     } else if (type == 'edition') {
       const edition = await goerliSDK.getContract(contractAddress, 'edition')
       const mintSignature = await edition.signature.generateFromTokenId({
-        tokenId: 1,
+        tokenId: 0,
         quantity: 1,
         to: minterAddress
       })
       docRef.update({ keys })
+      console.log('mintSignature')
       res.status(200).json(mintSignature)
     }
   } else {
+    console.log('key')
+
     res.status(400).json({
       message: 'key is already used'
     })

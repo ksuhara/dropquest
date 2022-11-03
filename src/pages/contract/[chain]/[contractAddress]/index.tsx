@@ -92,8 +92,10 @@ const Contract = () => {
                 <Grid container alignItems={'center'}>
                   <Calendar />
                   <Typography>
-                    {contractData.startTime ? formatDate(contractData.startTime?.toDate()) : '?'} ~{' '}
-                    {contractData.endTime ? formatDate(contractData.endTime?.toDate()) : '?'}
+                    {contractData.visibility?.startTime
+                      ? formatDate(contractData.visibility?.startTime?.toDate())
+                      : '?'}{' '}
+                    ~ {contractData.visibility?.endTime ? formatDate(contractData.visibility?.endTime?.toDate()) : '?'}
                   </Typography>
                 </Grid>
                 <Box>

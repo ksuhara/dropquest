@@ -89,8 +89,13 @@ const LP = () => {
                             <Grid container alignItems={'center'}>
                               <Calendar />
                               <Typography>
-                                {contract.startTime ? formatDate(contract.visibility?.startTime?.toDate()) : '?'} ~{' '}
-                                {contract.endTime ? formatDate(contract.visibility?.endTime?.toDate()) : '?'}
+                                {contract.visibility?.startTime
+                                  ? formatDate(contract.visibility?.startTime?.toDate())
+                                  : '?'}
+                                ~
+                                {contract.visibility?.endTime
+                                  ? formatDate(contract.visibility?.endTime?.toDate())
+                                  : '?'}
                               </Typography>
                             </Grid>
                           </Grid>

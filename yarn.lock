@@ -2258,36 +2258,6 @@
   resolved "https://registry.yarnpkg.com/@casl/react/-/react-2.3.0.tgz#e97493c4ff6cfc99001b71f59a9dbe132f884da2"
   integrity sha512-xP5G9ShXviE56IrU4mPpj1K7bl8KmNOjz3e4YgwrirmRdtZ38rF70a5AkFotWX9hgdH2mqZK/VHiYDGAIlYu1Q==
 
-"@cbor-extract/cbor-extract-darwin-arm64@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cbor-extract/cbor-extract-darwin-arm64/-/cbor-extract-darwin-arm64-2.0.0.tgz#cf0667e4c22111c9d45e16c29964892b12460a76"
-  integrity sha512-jebtLrruvsBbGMsUn0QxZW/8Z7caS9OkszVKZ64WTWajUkyohmolUdKL2nbfaTyyi3ABJrxVNM4YO1pvMsNI1g==
-
-"@cbor-extract/cbor-extract-darwin-x64@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cbor-extract/cbor-extract-darwin-x64/-/cbor-extract-darwin-x64-2.0.0.tgz#7bc01e7911b97eee4c78ae074bd3108f2ff208c3"
-  integrity sha512-LGYjdlyqANBqCDzBujCqXpPcK70rvaQgw98/aquzBuEmK0KXS7i579CoVG1yS/eb3bMqiVPevBri45jbR6Tlsg==
-
-"@cbor-extract/cbor-extract-linux-arm64@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cbor-extract/cbor-extract-linux-arm64/-/cbor-extract-linux-arm64-2.0.0.tgz#e40608afed5f373091560fa9dcd19c7f52f510b0"
-  integrity sha512-c1rbQcSF01yVgbG60zEfHNsUkXiEEQRNdYqm5qpqEAkLx4gA6DDU91IQbalkqXfwDuQzcMovOc1TC3uJJIi2OQ==
-
-"@cbor-extract/cbor-extract-linux-arm@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cbor-extract/cbor-extract-linux-arm/-/cbor-extract-linux-arm-2.0.0.tgz#f52a7580fb23e305370e66ae9ff136de3729c4b8"
-  integrity sha512-cOGHEIif5rPbpix6qhpuatrZzm6HeC5rT0nXt8ynLTc7PzfXmovswD9x6d9h5NcHswkV5y3PbkNbpel/tLADYg==
-
-"@cbor-extract/cbor-extract-linux-x64@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cbor-extract/cbor-extract-linux-x64/-/cbor-extract-linux-x64-2.0.0.tgz#8c936b8a93f915bf3c2459d5b4b78d244bda0f26"
-  integrity sha512-WYeE1b5WGf9pbbQH3qeNBXq710gGsuVFUiP148RY8In+2pCp/fxjBpe701ngam9/fF5D+gJs8B1i5wv/PN7JZA==
-
-"@cbor-extract/cbor-extract-win32-x64@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cbor-extract/cbor-extract-win32-x64/-/cbor-extract-win32-x64-2.0.0.tgz#4d4ad91527a8313c3db1e2167a8821dfae9d6211"
-  integrity sha512-XqVuJEnE0jpl/RkuSp04FF2UE73gY52Y4nZaIE6j9GAeSH2cHYU5CCd4TaVMDi2M18ZpZv7XhL/k+nneQzyJpQ==
-
 "@coinbase/wallet-sdk@^3.0.8":
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/@coinbase/wallet-sdk/-/wallet-sdk-3.5.3.tgz#ffa657cc16f896e08c3e9ac571ca6a37d1f560fd"
@@ -4812,29 +4782,29 @@
     use-sync-external-store "^1.2.0"
 
 "@thirdweb-dev/auth@^2.0.13":
-  version "2.0.13"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/auth/-/auth-2.0.13.tgz#228c5eb1cf1cf7b3a9f3fda30fe0fec1e323434b"
-  integrity sha512-4w3OK2If1/PEi6eRG9gC4x0X+M1CMlXjTIhqpCBxVDeSXZC5y+hRb0tpPLWWW3K2Gx22qaIMbcVZHmzNmEvwbQ==
+  version "2.0.28"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/auth/-/auth-2.0.28.tgz#0d8748b35ec99673c6ee01148f1f22dcc14a28b5"
+  integrity sha512-FUAp49Z0xOXrqMJ1xJV+/GpihyVvDo1FwrDTy4vSPQ67i1cj5f4j93OxE+ci4z93/FEWxuEAb289DP2M/KuhjQ==
   dependencies:
     cookie "^0.5.0"
     cookie-parser "^1.4.6"
 
-"@thirdweb-dev/contracts-js@^1.1.9":
-  version "1.1.9"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts-js/-/contracts-js-1.1.9.tgz#a386634775db149e9db1128319e057e266f57a4c"
-  integrity sha512-CD6K+ddGd20iFzw/NqgUxuZqM5K4jBNncJBPJjFXrbuR8ppfTiN6AOtYOUHI+nAyeLKckRit3ulfkjCbYewpTg==
+"@thirdweb-dev/contracts-js@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts-js/-/contracts-js-1.2.0.tgz#ef025eee23f836c717c6797f702e1a404a5e5f30"
+  integrity sha512-ZOnJ9so1jBrJSLBAmsJz9FuznkW8jvriHjVGsdiNBbXwW5WwKW2W5C/6KvbEVjjsUWVOreGG0vhVtEvaSdlcBw==
   dependencies:
-    "@thirdweb-dev/contracts" "3.1.8-0"
+    "@thirdweb-dev/contracts" "3.2.0-4"
 
-"@thirdweb-dev/contracts@3.1.8-0":
-  version "3.1.8-0"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts/-/contracts-3.1.8-0.tgz#847af3fe9a53368e7be04b7b6e6afe076d3d1676"
-  integrity sha512-PiQjdRcAUBlu3poc4g6dN9KvjTgYsA1Vi+B/IgryptCgcJeMY4cldMabKCgPaCg9dPVpUq4O+SOM00P6mBNvGw==
+"@thirdweb-dev/contracts@3.2.0-4":
+  version "3.2.0-4"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts/-/contracts-3.2.0-4.tgz#b696bdaae1dee7cf448549ac10bb78e55c622272"
+  integrity sha512-Mc3VvBB6rqTMKKH04UQbDabAlVPT7PiKBQrJDuhAPjOxBYWwn9pHi7amXJt2tJOkmHAj+w+oT76q7IqWv3QHhw==
 
 "@thirdweb-dev/react@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/react/-/react-3.4.0.tgz#9bbbc5d3dfe70988c4599482a53d48855e8212d6"
-  integrity sha512-xwuHP8OYYD9n36A8ULHXDbNAQLTyrDtcO4MBbaVFDv0tcWC+QTUxCDWDhYcwWqhJhfa66bcZ9vTD81NZc9bhTg==
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/react/-/react-3.5.1.tgz#2d78957a1f4113824000632cc6671f1db2e60043"
+  integrity sha512-XjkgDsTMfrrOCgKwWWJiODEToyDjMJPJvujI1K0LyZ3lAE0AP+D7KWoJOmFEiru+xrW4KEcF1U48fTCbT4EMLg==
   dependencies:
     "@emotion/react" "^11.10.0"
     "@emotion/styled" "^11.10.0"
@@ -4857,20 +4827,19 @@
     wagmi "^0.2.28"
 
 "@thirdweb-dev/sdk@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-3.4.0.tgz#72bd70b6ad5a04b9801c5be6ebcd7f67d67a5715"
-  integrity sha512-zmVPa4lCU1yD7j73msw0c8IAGJAFNPIaypcSzn6XU/IzvT0Co3tfqhAeXjTRSWdUPV/ntA6yeStuTwjWsI16uA==
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-3.5.1.tgz#817d23e5b94bc7158caecdb5995201c86b478f24"
+  integrity sha512-rs73Gh3Qu6DKBj9gVYUZRCzaIrPFkggKoxvGciaCNmQpZ4dcxqicJmhbSphFrMhflsX5eCM5aKcduMPirIl9pw==
   dependencies:
     "@metaplex-foundation/js" "0.15.0"
     "@metaplex-foundation/mpl-token-metadata" "2.2.2"
     "@project-serum/anchor" "0.25.0"
     "@solana/spl-token" "0.2.0"
     "@solana/web3.js" "1.62.0"
-    "@thirdweb-dev/contracts-js" "^1.1.9"
+    "@thirdweb-dev/contracts-js" "^1.2.0"
     "@thirdweb-dev/storage" "^1.0.6"
     bn.js "^5.2.1"
     bs58 "^5.0.0"
-    cbor-x "^1.4.1"
     cross-fetch "^3.1.5"
     eventemitter3 "^4.0.7"
     fast-deep-equal "^3.1.3"
@@ -6524,9 +6493,9 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001332:
-  version "1.0.30001344"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001344.tgz#8a1e7fdc4db9c2ec79a05e9fd68eb93a761888bb"
-  integrity sha512-0ZFjnlCaXNOAYcV7i+TtdKBp0L/3XEU2MF/x6Du1lrh+SRX4IfzIVL4HNJg5pB2PmFb8rszIGyOvsZnqqRoc2g==
+  version "1.0.30001429"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001429.tgz#70cdae959096756a85713b36dd9cb82e62325639"
+  integrity sha512-511ThLu1hF+5RRRt0zYCf2U2yRr9GPF6m5y90SBCWsvSoYoW7yAGlv/elyPaNfvGCkp6kj/KFZWU0BMA69Prsg==
 
 caniuse-lite@^1.0.30001400:
   version "1.0.30001418"
@@ -6567,27 +6536,6 @@ catharsis@^0.9.0:
   integrity sha512-prMTQVpcns/tzFgFVkVp6ak6RykZyWb3gu8ckUpd6YkTlacOd3DXGJjIpD4Q6zJirizvaiAjSSHlOsA+6sNh2A==
   dependencies:
     lodash "^4.17.15"
-
-cbor-extract@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/cbor-extract/-/cbor-extract-2.0.2.tgz#8e45339627fb8b47071e8e71138c630019125939"
-  integrity sha512-QoLGEgPff03ad/L66P91ci5Zmf7Woq8bh4H5XT3+D5annlrPH5ObHf2Yvo53eDQaDkQtF9tJwMKSWANGXDmwUA==
-  dependencies:
-    node-gyp-build-optional-packages "5.0.3"
-  optionalDependencies:
-    "@cbor-extract/cbor-extract-darwin-arm64" "2.0.0"
-    "@cbor-extract/cbor-extract-darwin-x64" "2.0.0"
-    "@cbor-extract/cbor-extract-linux-arm" "2.0.0"
-    "@cbor-extract/cbor-extract-linux-arm64" "2.0.0"
-    "@cbor-extract/cbor-extract-linux-x64" "2.0.0"
-    "@cbor-extract/cbor-extract-win32-x64" "2.0.0"
-
-cbor-x@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/cbor-x/-/cbor-x-1.4.1.tgz#1cada332cf5b7d1f940b494c0e88f2f1439bbcf3"
-  integrity sha512-qp6nM61RaamDJWsDGHzMIQ4+XBtg7/QIoBi5Lra4IDU65eP8lHcgkkJ9t2yIU8EvRThBfFCh6+S1Qkrmq93J3Q==
-  optionalDependencies:
-    cbor-extract "^2.0.2"
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -7702,9 +7650,9 @@ eslint-plugin-react-hooks@^4.5.0:
   integrity sha512-8k1gRt7D7h03kd+SAAlzXkQwWK22BnK6GKZG+FJA6BAGy22CFvl8kCIXKpVux0cCxMWDQUPqSok0LKaZ0aOcCw==
 
 eslint-plugin-react@^7.29.4:
-  version "7.30.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.30.0.tgz#8e7b1b2934b8426ac067a0febade1b13bd7064e3"
-  integrity sha512-RgwH7hjW48BleKsYyHK5vUAvxtE9SMPDKmcPRQgtRCYaZA0XQPt5FSkrU3nhz5ifzMZcA8opwmRJ2cmOO8tr5A==
+  version "7.31.10"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.31.10.tgz#6782c2c7fe91c09e715d536067644bbb9491419a"
+  integrity sha512-e4N/nc6AAlg4UKW/mXeYWd3R++qUano5/o+t+wnWxIf+bLsOaH3a4q74kX3nDjYym3VBN4HyO9nEn1GcAqgQOA==
   dependencies:
     array-includes "^3.1.5"
     array.prototype.flatmap "^1.3.0"
@@ -10211,11 +10159,6 @@ node-forge@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.3.1.tgz#be8da2af243b2417d5f646a770663a92b7e9ded3"
   integrity sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==
-
-node-gyp-build-optional-packages@5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.0.3.tgz#92a89d400352c44ad3975010368072b41ad66c17"
-  integrity sha512-k75jcVzk5wnnc/FMxsf4udAoTEUv2jY3ycfdSd3yWu6Cnd1oee6/CfZJApyscA4FJOmdoixWwiwOyf16RzD5JA==
 
 node-gyp-build@^4.2.0, node-gyp-build@^4.3.0:
   version "4.5.0"
