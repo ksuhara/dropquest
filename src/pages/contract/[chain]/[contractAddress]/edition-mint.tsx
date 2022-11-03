@@ -18,7 +18,7 @@ import {
   useNetwork,
   useNetworkMismatch
 } from '@thirdweb-dev/react'
-import { ChainId, SignedPayload1155 } from '@thirdweb-dev/sdk'
+import { SignedPayload1155 } from '@thirdweb-dev/sdk'
 import { doc, getDoc } from 'firebase/firestore'
 import CheckOutline from 'mdi-material-ui/CheckOutline'
 import Restore from 'mdi-material-ui/Restore'

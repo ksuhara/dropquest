@@ -107,7 +107,6 @@ const CreateContractPage = () => {
     }
 
     const idToken = await user?.getIdToken()
-    console.log(idToken)
 
     const contractMetadata = {
       name,

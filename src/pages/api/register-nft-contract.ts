@@ -18,7 +18,7 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
     return res.status(400).json({ error: 'Invalid Authorization header value' })
   }
 
-  const docRef = db.collection('chain').doc(chain).collection('contracts').doc(nftAddress)
+  const docRef = db.collection(`chain/${chain}/contracts/`).doc(nftAddress)
   const data = await docRef.get()
   if (data.exists) {
     return res.status(400).send({ error: 'already registered' })
@@ -35,22 +35,13 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
     return res.status(400).send({ error: 'please add 0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC to minter' })
   }
 
-  // リファラルがあれば数字変える
-  const keys = []
-  for (let i = 0; i < 30; i++) {
-    const rand = randomstring.generate({
-      length: 16,
-      charset: 'alphanumeric',
-      capitalization: 'lowercase'
-    })
-    keys.push({
-      key: rand,
-      keyStatus: 'stock'
-    })
-  }
   const date = new Date()
   const endTime = new Date(date.setMonth(date.getMonth() + 1))
-  docRef.set(
+
+  const batch = db.batch()
+
+  batch.set(
+    docRef,
     {
       name: contractMetadata.name,
       symbol: contractMetadata.symbol,
@@ -58,7 +49,6 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
       description: contractMetadata.description,
       contractAddress: nftAddress,
       owner: address,
-      keys: keys,
       createdAt: firestore.FieldValue.serverTimestamp(),
       contractType: 'edition',
       chain: chain,
@@ -70,5 +60,22 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
     },
     { merge: true }
   )
+
+  // リファラルがあれば数字変える
+  for (let i = 0; i < 30; i++) {
+    const rand = randomstring.generate({
+      length: 16,
+      charset: 'alphanumeric',
+      capitalization: 'lowercase'
+    })
+    const keysRef = db.collection(`chain/${chain}/contracts/${nftAddress}/keys`).doc(rand)
+
+    batch.set(keysRef, {
+      keyStatus: 'stock'
+    })
+  }
+
+  await batch.commit()
+
   res.status(200).json('registered')
 }

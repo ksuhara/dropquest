@@ -8,10 +8,12 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useAddress } from '@thirdweb-dev/react'
-import { doc, getDoc, onSnapshot } from 'firebase/firestore'
+import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore'
 import { useRouter } from 'next/router'
 import { useQRCode } from 'next-qrcode'
 import { useEffect, useState } from 'react'
+import { filterValidKeys } from 'src/@core/utils/key'
+import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
@@ -24,21 +26,10 @@ const ContractQR = () => {
   const { db } = initializeFirebaseClient()
   const { Canvas } = useQRCode()
 
-  interface Key {
-    key: string
-    keyStatus: 'stock' | 'pending' | 'signatured'
-  }
-
   const [contractData, setContractData] = useState<any>()
   const [isLoading, setIsLoading] = useState(true)
   const [keys, setKeys] = useState<Key[]>([])
   useEffect(() => {
-    const filterValidKeys = (keys: Key[]) => {
-      const result = keys.filter(key => key.keyStatus == 'stock')
-
-      return result
-    }
-
     const syncData = async () => {
       if (!contractAddress) return
       const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
@@ -48,14 +39,23 @@ const ContractQR = () => {
             ...doc.data(),
             id: doc.id
           })
-          const filteredKeys = filterValidKeys(doc.data().keys)
-          console.log(filteredKeys, 'filteredKeys')
-
-          setKeys(filteredKeys)
         } else {
           setContractData(null)
         }
         setIsLoading(false)
+      })
+
+      const q = query(
+        collection(db, `chain/${chain}/contracts/${contractAddress}/keys`),
+        where('keyStatus', '==', 'stock')
+      )
+      onSnapshot(q, querySnapshot => {
+        const arr: any = []
+        querySnapshot.forEach(doc => {
+          arr.push({ ...doc.data(), key: doc.id })
+        })
+        console.log(arr)
+        setKeys(filterValidKeys(arr))
       })
     }
     syncData()
@@ -93,7 +93,7 @@ const ContractQR = () => {
                 </Typography>
                 {keys.length ? (
                   <Canvas
-                    text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${keys[0]}`}
+                    text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${keys[0]?.key}`}
                     options={{
                       type: 'image/jpeg',
                       quality: 0.3,

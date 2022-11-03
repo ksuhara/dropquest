@@ -2,21 +2,13 @@ import { NextApiRequest, NextApiResponse } from 'next/types'
 
 import initializeFirebaseServer from '../../configs/initFirebaseAdmin'
 
-export default async function fetchTwitterUser(req: NextApiRequest, res: NextApiResponse) {
+export default async function changeKeyStatus(req: NextApiRequest, res: NextApiResponse) {
   const { contractAddress, keyString, chain } = JSON.parse(req.body)
 
   const { db } = initializeFirebaseServer()
 
-  const docRef = db.collection(`chain/${chain}/contracts`).doc(contractAddress)
-
-  const doc = await docRef.get()
-  const keys = doc.data()!.keys
-  const index = keys.findIndex((element: any) => element.key == keyString)
-  keys[index] = {
-    key: keyString,
-    keyStatus: 'pending'
-  }
-  docRef.update({ keys })
+  const docRef = db.collection(`chain/${chain}/contracts/${contractAddress}/keys`).doc(keyString)
+  docRef.update({ keyStatus: 'pending' })
 
   res.status(200).json('updated')
 }

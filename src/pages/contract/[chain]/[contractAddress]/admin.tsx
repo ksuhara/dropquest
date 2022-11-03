@@ -34,7 +34,7 @@ import { DataGrid, GridColumns, GridRowsProp } from '@mui/x-data-grid'
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api'
 import { useContract, useNFTs } from '@thirdweb-dev/react'
 import { ApexOptions } from 'apexcharts'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import Delete from 'mdi-material-ui/Delete'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
@@ -45,6 +45,8 @@ import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import { filterValidKeys } from 'src/@core/utils/key'
+import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import ChainContext from 'src/context/Chain'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
@@ -119,7 +121,12 @@ const EditionAdmin = () => {
         endTime: endPicker
       }
     })
-    toast.success('successfully saved!')
+      .then(() => {
+        toast.success('successfully saved!')
+      })
+      .catch(err => {
+        toast.error(err.message)
+      })
   }
 
   const verifyTwitterGate = async () => {
@@ -129,7 +136,7 @@ const EditionAdmin = () => {
         screenName: adminEditData.twitterGate.twitterId
       })
     }).catch((e: any) => {
-      toast.error('failed')
+      toast.error(e.message)
     })
     if (!userReq) return
     const userResult = await userReq.json()
@@ -190,11 +197,6 @@ const EditionAdmin = () => {
     }
   }
 
-  interface Key {
-    key: string
-    keyStatus: 'stock' | 'pending' | 'signatured'
-  }
-
   const payment = async () => {
     const response = await fetch(`/api/stripe-checkout`, {
       method: 'POST',
@@ -203,7 +205,11 @@ const EditionAdmin = () => {
         plan,
         chain
       })
-    }).then(data => data.json())
+    })
+      .then(data => data.json())
+      .catch(err => {
+        toast.error(err.message)
+      })
     if (response.customer_id) {
       window.localStorage.setItem('customer_id', response.customer_id)
     }
@@ -275,6 +281,8 @@ const EditionAdmin = () => {
   }
 
   useEffect(() => {
+    setSelectedChain(nameToChainId[chain as string])
+
     const syncData = async () => {
       if (!contractAddress) return
       const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
@@ -287,9 +295,13 @@ const EditionAdmin = () => {
         location: testData?.location,
         visibility: testData?.visibility
       })
-      setSelectedChain(nameToChainId[chain as string])
-      const validKeys = testData!.keys.filter((key: any) => key.keyStatus == 'stock')
-      setKeys(validKeys)
+      const querySnapshot = await getDocs(collection(db, `chain/${chain}/contracts/${contractAddress}/keys`))
+      const arr: any = []
+      querySnapshot.forEach(doc => {
+        arr.push({ ...doc.data(), key: doc.id })
+      })
+      setKeys(arr)
+
       setStartPicker(testData?.visibility?.startTime?.toDate())
       setEndPicker(testData?.visibility?.endTime?.toDate())
     }
@@ -323,11 +335,9 @@ const EditionAdmin = () => {
   }
 
   const handleMapSelect = async (address: any) => {
-    console.log(address)
     setMapName(address, false)
     clearSuggestions()
     const geocode = await getGeocode({ address })
-    console.log(geocode)
     const { lat, lng } = await getLatLng(geocode[0])
     setAdminEditData((prevState: any) => ({
       ...prevState,
@@ -355,7 +365,7 @@ const EditionAdmin = () => {
                 href={`/contract/${chain}/${contractAddress}/qr`}
                 variant='contained'
                 size='large'
-                disabled={keys.length == 0}
+                disabled={filterValidKeys(keys).length == 0}
               >
                 qrコード表示
               </Button>
@@ -399,7 +409,7 @@ const EditionAdmin = () => {
                       <ReactApexcharts
                         type='donut'
                         height={120}
-                        series={[contractData.keys.length - keys.length, keys.length]}
+                        series={[keys.length - filterValidKeys(keys).length, filterValidKeys(keys).length]}
                         options={options}
                       />
                     </Grid>
@@ -408,7 +418,7 @@ const EditionAdmin = () => {
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Typography variant='body2'>Number of Tickets</Typography>
                           <Typography variant='h6'>
-                            {keys.length}/{contractData.keys.length}
+                            {filterValidKeys(keys).length}/{keys.length}
                           </Typography>
                         </Box>
                         <Button

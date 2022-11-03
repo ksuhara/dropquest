@@ -42,15 +42,6 @@ const LP = () => {
     }
   }))
 
-  interface Key {
-    key: string
-    keyStatus: 'stock' | 'pending' | 'signatured'
-  }
-
-  const filterValidKeys = (keys: Key[]) => {
-    return keys.filter((key: any) => key.keyStatus == 'stock')
-  }
-
   const [tabMode, setTabValue] = useState<string>('ongoing')
   const [ongoingEvent, setOngoingEvent] = useState<any[]>([])
   const [pastEvent, setPastEvent] = useState<any[]>([])
@@ -113,9 +104,6 @@ const LP = () => {
                           </Grid>
                         </Grid>
                         <Typography noWrap>{contract.description}</Typography>
-                        <Typography variant='h6'>
-                          {filterValidKeys(contract.keys).length}/{contract.keys.length}
-                        </Typography>
                       </CardContent>
                     </Grid>
                   </Grid>

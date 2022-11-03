@@ -81,3 +81,8 @@ export type PaymentTypes = {
   formatCardNumber(elem: HTMLInputElement): HTMLInputElement
   formatCardExpiry(elem: HTMLInputElement): HTMLInputElement
 }
+
+export interface Key {
+  key: string
+  keyStatus: 'stock' | 'pending' | 'signatured'
+}

@@ -1,15 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api'
-import { useAddress } from '@thirdweb-dev/react'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import Calendar from 'mdi-material-ui/Calendar'
 import MapMarker from 'mdi-material-ui/MapMarker'
@@ -17,22 +13,16 @@ import { useRouter } from 'next/router'
 import { useQRCode } from 'next-qrcode'
 import { useEffect, useState } from 'react'
 import { formatDate } from 'src/@core/utils/format'
+import { filterValidKeys } from 'src/@core/utils/key'
+import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
 const Contract = () => {
   const router = useRouter()
   const { contractAddress, chain } = router.query
-  const basePath =
-    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://regidrop-frontend.vercel.app/'
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
-  const { Canvas } = useQRCode()
-
-  interface Key {
-    key: string
-    keyStatus: 'stock' | 'pending' | 'signatured'
-  }
 
   const { isLoaded } = useLoadScript({ googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '' })
 
@@ -44,12 +34,7 @@ const Contract = () => {
   }
   const [contractData, setContractData] = useState<any>()
   const [isLoading, setIsLoading] = useState(true)
-  const [keys, setKeys] = useState<Key[]>([])
   useEffect(() => {
-    const filterValidKeys = (keys: Key[]) => {
-      return keys.filter(key => key.keyStatus == 'stock')
-    }
-
     const syncData = async () => {
       if (!contractAddress) return
       const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
@@ -59,8 +44,6 @@ const Contract = () => {
             ...doc.data(),
             id: doc.id
           })
-          const filteredKeys = filterValidKeys(doc.data().keys)
-          setKeys(filteredKeys)
         } else {
           setContractData(null)
         }
