@@ -41,6 +41,8 @@ import DotsVertical from 'mdi-material-ui/DotsVertical'
 import Ethereum from 'mdi-material-ui/Ethereum'
 import Plus from 'mdi-material-ui/Plus'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
@@ -52,8 +54,21 @@ import ChainContext from 'src/context/Chain'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import usePlacesAutocomplete, { getDetails, getGeocode, getLatLng } from 'use-places-autocomplete'
 
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['admin']))
+    }
+  }
+}
+
+export async function getStaticPaths() {
+  return { paths: [], fallback: true }
+}
+
 const EditionAdmin = () => {
   const router = useRouter()
+  const { t } = useTranslation()
   const { contractAddress, chain } = router.query
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
@@ -213,7 +228,6 @@ const EditionAdmin = () => {
     if (response.customer_id) {
       window.localStorage.setItem('customer_id', response.customer_id)
     }
-    console.log(response, 'respense')
     console.log(response.checkout_url)
     router.push(response.checkout_url)
   }
@@ -286,24 +300,23 @@ const EditionAdmin = () => {
     const syncData = async () => {
       if (!contractAddress) return
       const docRef = doc(db, `chain/${chain}/contracts`, contractAddress as string)
-      const data = await getDoc(docRef)
-      const testData = await data.data()
-      setContractData(testData)
+      const docResult = await getDoc(docRef)
+      const docData = await docResult.data()
+      setContractData(docData)
       setAdminEditData({
-        twitterGate: testData?.twitterGate,
-        nftGate: testData?.nftGate,
-        location: testData?.location,
-        visibility: testData?.visibility
+        twitterGate: docData?.twitterGate,
+        nftGate: docData?.nftGate,
+        location: docData?.location,
+        visibility: docData?.visibility
       })
+      setStartPicker(docData?.visibility?.startTime?.toDate())
+      setEndPicker(docData?.visibility?.endTime?.toDate())
       const querySnapshot = await getDocs(collection(db, `chain/${chain}/contracts/${contractAddress}/keys`))
       const arr: any = []
       querySnapshot.forEach(doc => {
         arr.push({ ...doc.data(), key: doc.id })
       })
       setKeys(arr)
-
-      setStartPicker(testData?.visibility?.startTime?.toDate())
-      setEndPicker(testData?.visibility?.endTime?.toDate())
     }
     syncData()
   }, [contractAddress, db, chain])
@@ -367,7 +380,7 @@ const EditionAdmin = () => {
                 size='large'
                 disabled={filterValidKeys(keys).length == 0}
               >
-                qrコード表示
+                {t('admin:qrcode_button')}
               </Button>
               <IconButton onClick={handleClick}>
                 <DotsVertical />
@@ -428,7 +441,7 @@ const EditionAdmin = () => {
                           sx={{ ml: 4 }}
                           startIcon={<Plus />}
                         >
-                          購入
+                          {t('admin:buy_ticket')}
                         </Button>
                         <Dialog
                           open={open}
@@ -438,7 +451,7 @@ const EditionAdmin = () => {
                           sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, pt: 8, pb: 8 } }}
                         >
                           <DialogTitle id='user-view-plans' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
-                            Add Mint Ticket
+                            {t('admin:ticket_modal_title')}
                           </DialogTitle>
 
                           <DialogContent>
@@ -447,7 +460,7 @@ const EditionAdmin = () => {
                               sx={{ textAlign: 'center' }}
                               id='user-view-plans-description'
                             >
-                              Choose the best plan for the user.
+                              {t('admin:ticket_modal_description')}
                             </DialogContentText>
                           </DialogContent>
                           <DialogContent
@@ -560,7 +573,7 @@ const EditionAdmin = () => {
                 <CardContent>
                   {isLoaded ? (
                     <>
-                      <Typography marginBottom={2}>Twitter Follow Gate</Typography>
+                      <Typography marginBottom={2}>{t('admin:location_description')}</Typography>
                       <FormControlLabel
                         control={
                           <Switch
@@ -628,7 +641,7 @@ const EditionAdmin = () => {
                       />
                     </OptionsWrapper>
                     <Box sx={{ mb: 8 }}>
-                      <Typography marginBottom={2}>Wafer sesame snaps chocolate bar candy</Typography>
+                      <Typography marginBottom={2}>{t('admin:twittergate_description')}</Typography>
                       <TextField
                         value={adminEditData.twitterGate?.twitterId}
                         onChange={handleChanges}
@@ -651,10 +664,7 @@ const EditionAdmin = () => {
                       />
                     </OptionsWrapper>
                     <Box>
-                      <Typography marginBottom={2}>
-                        Wafer sesame snaps chocolate bar candy canes halvah. Cupcake sesame snaps sweet tart dessert
-                        biscuit. Topping soufflé tart sweet croissant.
-                      </Typography>
+                      <Typography marginBottom={2}>{t('admin:nftgate_description')}</Typography>
                       <TextField
                         value={adminEditData.nftGate?.contractAddress}
                         onChange={handleChanges}
@@ -697,6 +707,7 @@ const EditionAdmin = () => {
                   }}
                 ></CardHeader>
                 <CardContent>
+                  <Typography marginBottom={2}>{t('admin:tokenlist_description')}</Typography>
                   <Button
                     variant='contained'
                     href={`https://thirdweb.com/${chain}/${contractAddress}/nfts`}

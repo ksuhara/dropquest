@@ -26,7 +26,7 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
       to: minterAddress
     })
     docRef.update({
-      keyStats: 'signatured',
+      keyStatus: 'signatured',
       minterAddress
     })
     console.log('mintSignature')

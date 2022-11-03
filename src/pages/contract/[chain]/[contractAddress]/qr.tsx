@@ -55,7 +55,7 @@ const ContractQR = () => {
           arr.push({ ...doc.data(), key: doc.id })
         })
         console.log(arr)
-        setKeys(filterValidKeys(arr))
+        setKeys(arr)
       })
     }
     syncData()
@@ -93,7 +93,7 @@ const ContractQR = () => {
                 </Typography>
                 {keys.length ? (
                   <Canvas
-                    text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${keys[0]?.key}`}
+                    text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${filterValidKeys(keys)[0]?.key}`}
                     options={{
                       type: 'image/jpeg',
                       quality: 0.3,
@@ -109,15 +109,22 @@ const ContractQR = () => {
                 ) : (
                   <Typography variant='h4'>Out of Stock</Typography>
                 )}
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant='h4'>
+                    {filterValidKeys(keys).length}/{keys.length}
+                  </Typography>
+                </Box>
 
                 <Box>
                   {basePath && (
                     <Button
                       variant='contained'
-                      href={`${basePath}/contract/${chain}/${contractAddress}/edition-mint?key=${keys[0]?.key}`}
+                      href={`${basePath}/contract/${chain}/${contractAddress}/edition-mint?key=${
+                        filterValidKeys(keys)[0]?.key
+                      }`}
                       target={'_blank'}
                     >
-                      test
+                      Read QR
                     </Button>
                   )}
                 </Box>

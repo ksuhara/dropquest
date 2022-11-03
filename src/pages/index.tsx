@@ -20,7 +20,7 @@ import useAllDocuments from 'src/hooks/useAllDocuments'
 export async function getStaticProps({ locale }: any) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common']))
+      ...(await serverSideTranslations(locale, ['common', 'LP']))
     }
   }
 }
@@ -63,11 +63,14 @@ const LP = () => {
   return (
     <>
       <Typography variant='h3'>{t('common:omiyage_nft')}</Typography>
+      <Typography variant='subtitle1' sx={{ marginY: 2 }}>
+        {t('LP:description')}
+      </Typography>
       <Box marginBottom={4}>
         <TabContext value={tabMode}>
           <TabList onChange={handleTabChange} aria-label='simple tabs example'>
-            <Tab value='ongoing' label='Upcoming / ongoing' />
-            <Tab value='past' label='Past' />
+            <Tab value='ongoing' label={`${t('LP:upcoming_tab')}`} />
+            <Tab value='past' label={`${t('LP:past_tab')}`} />
           </TabList>
         </TabContext>
       </Box>

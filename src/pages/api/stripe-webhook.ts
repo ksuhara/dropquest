@@ -1,4 +1,3 @@
-import { firestore } from 'firebase-admin'
 import { buffer } from 'micro'
 import type { NextApiRequest, NextApiResponse } from 'next/types'
 import randomstring from 'randomstring'
@@ -31,25 +30,21 @@ export default async function stripeWebhook(req: NextApiRequest, res: NextApiRes
   const parsedBody = JSON.parse(buf.toString())
   const metadata = parsedBody.data.object.metadata
   const { db } = initializeFirebaseServer()
-  const docRef = db.collection(`chain/${metadata.chain}/contracts`).doc(metadata.contractAddress)
-  const doc = await docRef.get()
-  const keys = doc.data()!.keys
-  const ticketsAdd = metadata.plan
-  for (let i = 0; i < ticketsAdd; i++) {
+  const batch = db.batch()
+  for (let i = 0; i < metadata.plan; i++) {
     const rand = randomstring.generate({
       length: 16,
       charset: 'alphanumeric',
       capitalization: 'lowercase'
     })
-    keys.push({
-      key: rand,
+    const keysRef = db.collection(`chain/${metadata.chain}/contracts/${metadata.contractAddress}/keys`).doc(rand)
+
+    batch.set(keysRef, {
       keyStatus: 'stock'
     })
   }
-  docRef.update({
-    keys: keys,
-    updatedAt: firestore.FieldValue.serverTimestamp()
-  })
+
+  await batch.commit()
 
   res.send(200)
 }

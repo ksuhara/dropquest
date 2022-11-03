@@ -9,9 +9,19 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useEffect } from 'react'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import useFirebaseDocument from 'src/hooks/useFirebaseUserDocument'
+
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['home']))
+    }
+  }
+}
 
 const Home = () => {
   // const address = useAddress()
@@ -19,6 +29,8 @@ const Home = () => {
   // ** Hooks
   const { user, isLoading } = useFirebaseUser()
   const router = useRouter()
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!router.isReady) {
@@ -50,13 +62,11 @@ const Home = () => {
       ) : (
         <Grid item xs={12}>
           <Card>
-            <CardHeader title='Kick start your project 🚀'></CardHeader>
+            <CardHeader title={t('home:kickstart')}></CardHeader>
             <CardContent>
-              <Typography sx={{ mb: 2 }}>
-                Register your contract to this dashboard. The contract must be "SignatureDrop" or "Edition" of Thirdweb.
-              </Typography>
+              <Typography sx={{ mb: 2 }}>{t('home:description')}</Typography>
               <Button href='/create-contract' variant='contained' size='large' sx={{ ml: 4 }}>
-                Register NFT
+                {t('home:register_button')}
               </Button>
             </CardContent>
           </Card>

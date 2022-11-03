@@ -14,10 +14,6 @@ service cloud.firestore {
       return path([['databases', database, 'documents'].join('/'), paths.join('/')].join('/'));
     }
 
-    function existingData() {
-      return resource.data;
-    }
-
     function getData(path) {
       return get(path).data;
     }
@@ -26,14 +22,16 @@ service cloud.firestore {
       return getData(documentPath(['chain', chainId, 'contracts', address]));
     }
 
-    match /chain/{network} {
-      match /contracts/{address} {
-        allow read;
+    match /{path=**}/contracts/{contract}  {
+      allow read: if true
+    }
 
-        match /keys {
-          allow read: if isUserAuthenticated(nftContract(network, address).owner);
-        }
-      }
+    match /chain/{chain}/contracts/{contract}  {
+      allow read, create, update, delete: if isUserAuthenticated(nftContract(chain, contract).owner);
+    }
+
+    match /chain/{chain}/contracts/{contract}/keys/{key}  {
+      allow read: if isUserAuthenticated(nftContract(chain, contract).owner);
     }
   }
 }
