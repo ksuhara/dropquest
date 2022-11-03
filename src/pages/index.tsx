@@ -11,12 +11,24 @@ import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import Calendar from 'mdi-material-ui/Calendar'
 import Link from 'next/link'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SyntheticEvent, useEffect, useState } from 'react'
 import { formatDate } from 'src/@core/utils/format'
 import useAllDocuments from 'src/hooks/useAllDocuments'
 
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common']))
+    }
+  }
+}
+
 const LP = () => {
   const { contractsDocument } = useAllDocuments()
+
+  const { t } = useTranslation()
 
   const Img = styled('img')(({ theme }) => ({
     [theme.breakpoints.down('lg')]: {
@@ -59,7 +71,7 @@ const LP = () => {
 
   return (
     <>
-      <Typography variant='h3'>Omiyage NFTs</Typography>
+      <Typography variant='h3'>{t('common:omiyage_nft')}</Typography>
       <Box marginBottom={4}>
         <TabContext value={tabMode}>
           <TabList onChange={handleTabChange} aria-label='simple tabs example'>

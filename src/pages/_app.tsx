@@ -20,6 +20,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { Router } from 'next/router'
 import { SessionProvider } from 'next-auth/react'
+import { appWithTranslation } from 'next-i18next'
 // ** Loader Import
 import NProgress from 'nprogress'
 import { ReactNode, useState } from 'react'
@@ -166,4 +167,4 @@ const App = (props: ExtendedAppProps) => {
   )
 }
 
-export default App
+export default appWithTranslation(App)
