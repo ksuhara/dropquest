@@ -10,6 +10,8 @@ import Typography from '@mui/material/Typography'
 import { useAddress } from '@thirdweb-dev/react'
 import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useQRCode } from 'next-qrcode'
 import { useEffect, useState } from 'react'
 import { filterValidKeys } from 'src/@core/utils/key'
@@ -17,8 +19,26 @@ import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
-const ContractQR = () => {
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['qr', 'common'])),
+      locale
+    }
+  }
+}
+
+export async function getStaticPaths() {
+  return { paths: [], fallback: true }
+}
+
+interface ContractQRProps {
+  locale: string
+}
+
+const ContractQR = ({ locale }: ContractQRProps) => {
   const router = useRouter()
+  const { t } = useTranslation()
   const { contractAddress, chain } = router.query
   const basePath =
     process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://regidrop-frontend.vercel.app/'
@@ -45,10 +65,7 @@ const ContractQR = () => {
         setIsLoading(false)
       })
 
-      const q = query(
-        collection(db, `chain/${chain}/contracts/${contractAddress}/keys`),
-        where('keyStatus', '==', 'stock')
-      )
+      const q = query(collection(db, `chain/${chain}/contracts/${contractAddress}/keys`))
       onSnapshot(q, querySnapshot => {
         const arr: any = []
         querySnapshot.forEach(doc => {
@@ -86,14 +103,16 @@ const ContractQR = () => {
                   {contractData.name}
                 </Typography>
                 <Typography variant='subtitle2' noWrap>
-                  {contractAddress}
+                  {t('common:contract_address')}:{contractAddress}
                 </Typography>
                 <Typography variant='subtitle2' noWrap>
-                  created by:{contractAddress}
+                  {t('common:created_by')}:{contractData.owner}
                 </Typography>
                 {keys.length ? (
                   <Canvas
-                    text={`${basePath}/contract/${chain}/${contractAddress}/mint?key=${filterValidKeys(keys)[0]?.key}`}
+                    text={`${basePath}/${locale}/contract/${chain}/${contractAddress}/mint?key=${
+                      filterValidKeys(keys)[0]?.key
+                    }`}
                     options={{
                       type: 'image/jpeg',
                       quality: 0.3,
@@ -107,7 +126,7 @@ const ContractQR = () => {
                     }}
                   />
                 ) : (
-                  <Typography variant='h4'>Out of Stock</Typography>
+                  <Typography variant='h4'>{t('qr:outofstock')}</Typography>
                 )}
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                   <Typography variant='h4'>
@@ -116,10 +135,10 @@ const ContractQR = () => {
                 </Box>
 
                 <Box>
-                  {basePath && (
+                  {basePath == 'http://localhost:3000' && (
                     <Button
                       variant='contained'
-                      href={`${basePath}/contract/${chain}/${contractAddress}/edition-mint?key=${
+                      href={`${basePath}/${locale}/contract/${chain}/${contractAddress}/edition-mint?key=${
                         filterValidKeys(keys)[0]?.key
                       }`}
                       target={'_blank'}

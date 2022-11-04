@@ -26,15 +26,29 @@ import Twitter from 'mdi-material-ui/Twitter'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import ChainContext from 'src/context/Chain'
 
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['mint', 'common']))
+    }
+  }
+}
+
+export async function getStaticPaths() {
+  return { paths: [], fallback: true }
+}
+
 const Mint: NextPage = () => {
   const router = useRouter()
+  const { t } = useTranslation()
   const { key, contractAddress, chain } = router.query
-
   const address = useAddress()
   const connectWithMetamask = useMetamask()
   const disconnect = useDisconnect()
@@ -205,13 +219,17 @@ const Mint: NextPage = () => {
                 <Typography variant='h2' mb={2}>
                   {contractData.name}
                 </Typography>
-                <Typography variant='subtitle2'>{contractAddress}</Typography>
-                <Typography variant='subtitle2'>created by:{contractAddress}</Typography>
+                <Typography variant='subtitle2'>
+                  {t('common:contract_address')}:{contractAddress}
+                </Typography>
+                <Typography variant='subtitle2'>
+                  {t('common:created_by')}:{contractData.owner}
+                </Typography>
               </>
             ) : (
               <></>
             )}
-            <Typography>You can mint this NFT without paying gas.</Typography>
+            <Typography>{t('mint:description')}</Typography>
             <Box marginTop={4}>
               <>
                 {contractData?.twitterGate?.isActive ? (

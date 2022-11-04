@@ -57,7 +57,8 @@ import usePlacesAutocomplete, { getDetails, getGeocode, getLatLng } from 'use-pl
 export async function getStaticProps({ locale }: any) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['admin']))
+      ...(await serverSideTranslations(locale, ['admin'])),
+      locale
     }
   }
 }
@@ -66,7 +67,11 @@ export async function getStaticPaths() {
   return { paths: [], fallback: true }
 }
 
-const EditionAdmin = () => {
+interface AdminProps {
+  locale: string
+}
+
+const EditionAdmin = ({ locale }: AdminProps) => {
   const router = useRouter()
   const { t } = useTranslation()
   const { contractAddress, chain } = router.query
@@ -375,7 +380,7 @@ const EditionAdmin = () => {
             </Grid>
             <Grid item sx={{ mr: 4, my: 4 }}>
               <Button
-                href={`/contract/${chain}/${contractAddress}/qr`}
+                href={`/${locale}/contract/${chain}/${contractAddress}/qr`}
                 variant='contained'
                 size='large'
                 disabled={filterValidKeys(keys).length == 0}

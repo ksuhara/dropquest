@@ -23,6 +23,8 @@ import Typography from '@mui/material/Typography'
 import { ChainId, useAddress, useMetamask, useNetwork, useNetworkMismatch, useSDK } from '@thirdweb-dev/react'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import useBgColor from 'src/@core/hooks/useBgColor'
@@ -33,6 +35,14 @@ import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import FileUploaderSingle from 'src/views/forms/form-elements/file-uploader/FileUploaderSingle'
 import StepperCustomDot from 'src/views/forms/form-wizard/StepperCustomDot'
 
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['mint', 'common']))
+    }
+  }
+}
+
 const CreateContractPage = () => {
   const { selectedChain, setSelectedChain } = useContext(ChainContext)
   const address = useAddress()
@@ -42,6 +52,7 @@ const CreateContractPage = () => {
   const [imageURL, setImageURL] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { t } = useTranslation()
 
   const [open, setOpen] = useState(false)
 
@@ -76,20 +87,16 @@ const CreateContractPage = () => {
 
   const steps = [
     {
-      title: 'Deploy NFT Contract',
-      subtitle: 'Your Contract is being deployed',
-      description: 'Your Contract is being deployed. Please confirm in Metamask.'
+      title: t('create:step1_title'),
+      description: t('create:step1_description')
     },
     {
-      title: 'Grant Minter Role',
-      subtitle: 'Setup Information',
-      description: 'This service needs to have minter role of your contract to mint NFTs. Please confirm in Metamask.'
+      title: t('create:step2_title'),
+      description: t('create:step2_description')
     },
     {
-      title: 'Prepare Token',
-      subtitle: 'Add Social Links',
-      description:
-        'By signing this, you can prepare NFT with the image uploaded. You can skip this operation, but you need to do it by yourself on Thirdwebs dashboard in that case.'
+      title: t('create:step3_title'),
+      description: t('create:step3_description')
     }
   ]
 
@@ -143,7 +150,7 @@ const CreateContractPage = () => {
     await fetch(`/api/register-nft-contract`, {
       method: 'POST',
       body: JSON.stringify({
-        nftAddress: '0x41f47738dCEe72FAc403Cc2D97925b0E2742e752',
+        nftAddress: contractAddress,
         address,
         chain: chainToName[String(selectedChain)]
       }),
@@ -163,10 +170,10 @@ const CreateContractPage = () => {
           <CardContent>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                You can create your own NFT contract without paying gas.
+                {t('create:can_create_description')}
               </Typography>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                The contract is Thridweb's contract, so you can edit in Thirdweb's dashboard.
+                {t('create:can_edit_description')}
               </Typography>
             </Alert>
             <FormControl fullWidth>
@@ -237,7 +244,6 @@ const CreateContractPage = () => {
                             <Typography className='step-number'>0{index + 1}</Typography>
                             <div>
                               <Typography className='step-title'>{step.title}</Typography>
-                              {/* <Typography className='step-subtitle'>{step.subtitle}</Typography> */}
                             </div>
                           </div>
                         </StepLabel>
