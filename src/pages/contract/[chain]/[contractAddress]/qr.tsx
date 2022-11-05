@@ -32,8 +32,8 @@ export async function getStaticProps({ locale }: any) {
 export async function getStaticPaths() {
   return {
     paths: [
-      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'ja' },
-      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'en' }
+      // { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'ja' },
+      // { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'en' }
     ],
     fallback: true
   }
@@ -143,7 +143,10 @@ const ContractQR = ({ locale }: ContractQRProps) => {
                     }}
                   />
                 ) : (
-                  <Typography variant='h4'>{t('qr:outofstock')}</Typography>
+                  <Typography variant='h4'>
+                    {/* {t('qr:outofstock')} */}
+                    在庫切れ
+                  </Typography>
                 )}
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                   <Typography variant='h4'>

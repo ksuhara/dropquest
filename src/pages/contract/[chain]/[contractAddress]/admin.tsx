@@ -65,10 +65,7 @@ export async function getStaticProps({ locale }: any) {
 
 export async function getStaticPaths() {
   return {
-    paths: [
-      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'ja' },
-      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'en' }
-    ],
+    paths: [],
     fallback: true
   }
 }
@@ -394,7 +391,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                 size='large'
                 disabled={filterValidKeys(keys).length == 0}
               >
-                {t('admin:qrcode_button')}
+                {/* {t('admin:qrcode_button')} */}
+                QRコード
               </Button>
               <IconButton onClick={handleClick}>
                 <DotsVertical />
@@ -455,7 +453,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                           sx={{ ml: 4 }}
                           startIcon={<Plus />}
                         >
-                          {t('admin:buy_ticket')}
+                          {/* {t('admin:buy_ticket')} */}
+                          ミントチケットを購入する
                         </Button>
                         <Dialog
                           open={open}
@@ -465,7 +464,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                           sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, pt: 8, pb: 8 } }}
                         >
                           <DialogTitle id='user-view-plans' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
-                            {t('admin:ticket_modal_title')}
+                            {/* {t('admin:ticket_modal_title')} */}
+                            ミントチケットを追加
                           </DialogTitle>
 
                           <DialogContent>
@@ -474,7 +474,9 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                               sx={{ textAlign: 'center' }}
                               id='user-view-plans-description'
                             >
-                              {t('admin:ticket_modal_description')}
+                              {/* {t('admin:ticket_modal_description')} */}
+                              NFTミントチケットを購入することで、顧客がミントできるNFTの数を増やすことができます!ガス代はOmiyage
+                              NFTで負担しているのでご了承ください
                             </DialogContentText>
                           </DialogContent>
                           <DialogContent
@@ -587,7 +589,10 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                 <CardContent>
                   {isLoaded ? (
                     <>
-                      <Typography marginBottom={2}>{t('admin:location_description')}</Typography>
+                      <Typography marginBottom={2}>
+                        {/* {t('admin:location_description')} */}
+                        リアルイベントや店舗の場合、場所を設定できます。
+                      </Typography>
                       <FormControlLabel
                         control={
                           <Switch
@@ -655,7 +660,10 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                       />
                     </OptionsWrapper>
                     <Box sx={{ mb: 8 }}>
-                      <Typography marginBottom={2}>{t('admin:twittergate_description')}</Typography>
+                      <Typography marginBottom={2}>
+                        {/* {t('admin:twittergate_description')} */}
+                        指定した Twitter ユーザーをフォローすることを、ミント条件に設定する
+                      </Typography>
                       <TextField
                         value={adminEditData.twitterGate?.twitterId}
                         onChange={handleChanges}
@@ -678,7 +686,10 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                       />
                     </OptionsWrapper>
                     <Box>
-                      <Typography marginBottom={2}>{t('admin:nftgate_description')}</Typography>
+                      <Typography marginBottom={2}>
+                        {/* {t('admin:nftgate_description')} */}
+                        指定された NFT を保持することをミント条件に設定します。
+                      </Typography>
                       <TextField
                         value={adminEditData.nftGate?.contractAddress}
                         onChange={handleChanges}
@@ -721,7 +732,10 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                   }}
                 ></CardHeader>
                 <CardContent>
-                  <Typography marginBottom={2}>{t('admin:tokenlist_description')}</Typography>
+                  <Typography marginBottom={2}>
+                    {/* {t('admin:tokenlist_description')} */}
+                    詳細なトークン設定はthirdweb ダッシュボードで編集してください
+                  </Typography>
                   <Button
                     variant='contained'
                     href={`https://thirdweb.com/${chain}/${contractAddress}/nfts`}
