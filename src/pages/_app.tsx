@@ -132,7 +132,7 @@ const App = (props: ExtendedAppProps) => {
             }
           }}
           authConfig={{
-            domain: 'regidrop.vercel.app',
+            domain: 'omiyage-nft.vercel.app',
             authUrl: '/api/auth',
             loginRedirect: '/'
           }}

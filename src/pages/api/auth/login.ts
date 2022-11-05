@@ -8,7 +8,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const loginPayload = req.body.payload
 
   // Set this to your domain to prevent signature malleability attacks.
-  const domain = 'regidrop.vercel.app'
+  const domain = 'omiyage-nft.vercel.app'
 
   const sdk = ThirdwebSDK.fromPrivateKey(
     // https://portal.thirdweb.com/sdk/set-up-the-sdk/securing-your-private-key

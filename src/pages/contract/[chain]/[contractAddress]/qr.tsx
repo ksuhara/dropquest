@@ -41,8 +41,7 @@ const ContractQR = ({ locale }: ContractQRProps) => {
   const router = useRouter()
   const { t } = useTranslation()
   const { contractAddress, chain } = router.query
-  const basePath =
-    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://regidrop-frontend.vercel.app/'
+  const basePath = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://omiyage-nft.vercel.app/'
   const { user, isLoading: loadingAuth } = useFirebaseUser()
   const { db } = initializeFirebaseClient()
   const { Canvas } = useQRCode()

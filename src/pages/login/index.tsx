@@ -126,7 +126,7 @@ const LoginPage = () => {
 
   async function signIn() {
     // Use the same address as the one specified in _app.tsx.
-    const payload = await sdk?.auth.login('regidrop.vercel.app')
+    const payload = await sdk?.auth.login('omiyage-nft.vercel.app')
 
     // Make a request to the API with the payload.
     const res = await fetch('/api/auth/login', {
