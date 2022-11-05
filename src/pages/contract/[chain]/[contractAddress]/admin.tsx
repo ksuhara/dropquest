@@ -97,6 +97,12 @@ const EditionAdmin = ({ locale }: AdminProps) => {
     location: { name: '', latLng: { lat: 35.66, lng: 139.71 }, isActive: false },
     visibility: { isPublic: false }
   })
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '',
+    libraries: ['places']
+  })
+
   const handleChanges = (e: any) => {
     console.log(e.target)
     if (e.target.name == 'twitterGate-twitterId') {
@@ -281,10 +287,6 @@ const EditionAdmin = ({ locale }: AdminProps) => {
     mumbai: 80001
   }
 
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '',
-    libraries: ['places']
-  })
   const matches: boolean = useMediaQuery('(min-width:577px)')
   const {
     ready,
@@ -300,6 +302,7 @@ const EditionAdmin = ({ locale }: AdminProps) => {
   }
 
   useEffect(() => {
+    console.log(isLoaded, 'isLoaded')
     setSelectedChain(nameToChainId[chain as string])
 
     const syncData = async () => {

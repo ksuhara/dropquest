@@ -38,7 +38,7 @@ import StepperCustomDot from 'src/views/forms/form-wizard/StepperCustomDot'
 export async function getStaticProps({ locale }: any) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['mint', 'common']))
+      ...(await serverSideTranslations(locale, ['create', 'common']))
     }
   }
 }
