@@ -110,7 +110,7 @@ const ContractQR = ({ locale }: ContractQRProps) => {
                 </Typography>
                 {keys.length ? (
                   <Canvas
-                    text={`${basePath}/${locale}/contract/${chain}/${contractAddress}/mint?key=${
+                    text={`${basePath}/${locale}/contract/${chain}/${contractAddress}/edition-mint?key=${
                       filterValidKeys(keys)[0]?.key
                     }`}
                     options={{
