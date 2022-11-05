@@ -30,6 +30,7 @@ import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import ChainContext from 'src/context/Chain'
 
@@ -219,17 +220,28 @@ const Mint: NextPage = () => {
                 <Typography variant='h2' mb={2}>
                   {contractData.name}
                 </Typography>
-                <Typography variant='subtitle2'>
-                  {t('common:contract_address')}:{contractAddress}
-                </Typography>
-                <Typography variant='subtitle2'>
-                  {t('common:created_by')}:{contractData.owner}
-                </Typography>
+                <Grid container direction='row'>
+                  <Typography variant='subtitle2' sx={{ mr: 2 }}>
+                    {t('common:contract_address')}:
+                  </Typography>
+                  <Typography variant='subtitle2' noWrap>
+                    {contractAddress}
+                  </Typography>
+                </Grid>
+                <Grid container direction='row'>
+                  <Typography variant='subtitle2' sx={{ mr: 2 }}>
+                    {t('common:created_by')}:
+                  </Typography>
+                  <Jazzicon diameter={20} seed={jsNumberForAddress(contractData.owner)} />
+                  <Typography variant='subtitle2' noWrap>
+                    {contractData.owner}
+                  </Typography>
+                </Grid>
               </>
             ) : (
               <></>
             )}
-            <Typography>{t('mint:description')}</Typography>
+            <Typography sx={{ my: 4 }}>{t('mint:description')}</Typography>
             <Box marginTop={4}>
               <>
                 {contractData?.twitterGate?.isActive ? (
