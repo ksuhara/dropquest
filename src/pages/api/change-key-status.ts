@@ -8,7 +8,7 @@ export default async function changeKeyStatus(req: NextApiRequest, res: NextApiR
   const { db } = initializeFirebaseServer()
 
   const docRef = db.collection(`chain/${chain}/contracts/${contractAddress}/keys`).doc(keyString)
-  docRef.update({ keyStatus: 'pending' })
+  await docRef.update({ keyStatus: 'pending' })
 
   res.status(200).json('updated')
 }
