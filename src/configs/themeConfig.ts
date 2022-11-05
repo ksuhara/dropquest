@@ -6,11 +6,11 @@
  */
 
 // ** MUI Imports
-import { Direction,PaletteMode } from '@mui/material'
+import { Direction, PaletteMode } from '@mui/material'
 // ** Icon Import
 import CircleOutline from 'mdi-material-ui/CircleOutline'
 // ** Types
-import { AppBar, ContentWidth, Footer, HorizontalMenuToggle,Skin, VerticalNavToggle } from 'src/@core/layouts/types'
+import { AppBar, ContentWidth, Footer, HorizontalMenuToggle, Skin, VerticalNavToggle } from 'src/@core/layouts/types'
 
 type ThemeConfig = {
   skin: Skin
@@ -42,7 +42,7 @@ type ThemeConfig = {
 
 const themeConfig: ThemeConfig = {
   // ** Layout Configs
-  templateName: 'DropQuest' /* App Name */,
+  templateName: 'Omiyage' /* App Name */,
   layout: 'vertical' /* vertical | horizontal */,
   mode: 'light' /* light | dark */,
   direction: 'ltr' /* ltr | rtl */,

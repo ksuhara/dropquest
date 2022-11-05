@@ -14,6 +14,7 @@ import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useQRCode } from 'next-qrcode'
 import { useEffect, useState } from 'react'
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { filterValidKeys } from 'src/@core/utils/key'
 import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
@@ -102,12 +103,23 @@ const ContractQR = ({ locale }: ContractQRProps) => {
                 <Typography variant='h2' mb={2}>
                   {contractData.name}
                 </Typography>
-                <Typography variant='subtitle2' noWrap>
-                  {t('common:contract_address')}:{contractAddress}
-                </Typography>
-                <Typography variant='subtitle2' noWrap>
-                  {t('common:created_by')}:{contractData.owner}
-                </Typography>
+                <Grid container direction='row'>
+                  <Typography variant='subtitle2' sx={{ mr: 2 }}>
+                    {t('common:contract_address')}:
+                  </Typography>
+                  <Typography variant='subtitle2' noWrap>
+                    {contractAddress}
+                  </Typography>
+                </Grid>
+                <Grid container direction='row'>
+                  <Typography variant='subtitle2' sx={{ mr: 2 }}>
+                    {t('common:created_by')}:
+                  </Typography>
+                  <Jazzicon diameter={20} seed={jsNumberForAddress(contractData.owner)} />
+                  <Typography variant='subtitle2' noWrap>
+                    {contractData.owner}
+                  </Typography>
+                </Grid>
                 {keys.length ? (
                   <Canvas
                     text={`${basePath}/${locale}/contract/${chain}/${contractAddress}/edition-mint?key=${

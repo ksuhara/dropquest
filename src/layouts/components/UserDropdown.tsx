@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ** React Imports
 import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
@@ -19,6 +20,7 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 // ** Next Import
 import { useRouter } from 'next/router'
 import { Fragment, SyntheticEvent, useState } from 'react'
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
 import initializeFirebaseClient from 'src/configs/initFirebase'
@@ -57,6 +59,7 @@ const UserDropdown = (props: Props) => {
   }
 
   const handleDropdownClose = (url?: string) => {
+    console.log('aaaa')
     if (url) {
       router.push(url)
     }
@@ -95,12 +98,18 @@ const UserDropdown = (props: Props) => {
           horizontal: 'right'
         }}
       >
-        <Avatar
-          alt='John Doe'
-          onClick={handleDropdownOpen}
-          sx={{ width: 40, height: 40 }}
-          src='/images/avatars/1.png'
-        />
+        {user ? (
+          <Box onClick={handleDropdownOpen}>
+            <Jazzicon diameter={40} seed={jsNumberForAddress(user?.uid)} />
+          </Box>
+        ) : (
+          <Avatar
+            alt='John Doe'
+            onClick={handleDropdownOpen}
+            sx={{ width: 40, height: 40 }}
+            src='/images/avatars/1.png'
+          />
+        )}
       </Badge>
       <Menu
         anchorEl={anchorEl}
@@ -126,7 +135,11 @@ const UserDropdown = (props: Props) => {
                 horizontal: 'right'
               }}
             >
-              <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
+              {user ? (
+                <Jazzicon diameter={40} seed={jsNumberForAddress(user?.uid)} />
+              ) : (
+                <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
+              )}
             </Badge>
             <Box
               sx={{
@@ -136,15 +149,17 @@ const UserDropdown = (props: Props) => {
                 flexDirection: 'column'
               }}
             >
-              <Typography sx={{ fontWeight: 600 }}>{user?.uid}</Typography>
+              <Typography sx={{ fontWeight: 600 }} noWrap>
+                {user?.uid}
+              </Typography>
               {/* <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Admin
               </Typography> */}
             </Box>
           </Box>
         </Box>
-        <Divider sx={{ mt: 0, mb: 1 }} />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+        {/* <Divider sx={{ mt: 0, mb: 1 }} /> */}
+        {/* <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
           <Box sx={styles}>
             <AccountOutline sx={{ mr: 2 }} />
             Profile
@@ -167,7 +182,7 @@ const UserDropdown = (props: Props) => {
             <HelpCircleOutline sx={{ mr: 2 }} />
             FAQ
           </Box>
-        </MenuItem>
+        </MenuItem> */}
         <Divider />
         <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
           <LogoutVariant
