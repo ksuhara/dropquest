@@ -34,11 +34,21 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import ChainContext from 'src/context/Chain'
 
-export async function getServerSideProps({ locale }: any) {
+export async function getStaticProps({ locale }: any) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['mint', 'common']))
     }
+  }
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'ja' },
+      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'en' }
+    ],
+    fallback: true
   }
 }
 

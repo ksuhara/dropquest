@@ -54,12 +54,22 @@ import ChainContext from 'src/context/Chain'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import usePlacesAutocomplete, { getDetails, getGeocode, getLatLng } from 'use-places-autocomplete'
 
-export async function getServerSideProps({ locale }: any) {
+export async function getStaticProps({ locale }: any) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['admin'])),
       locale
     }
+  }
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'ja' },
+      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'en' }
+    ],
+    fallback: true
   }
 }
 

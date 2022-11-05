@@ -20,12 +20,22 @@ import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
-export async function getServerSideProps({ locale }: any) {
+export async function getStaticProps({ locale }: any) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['qr', 'common'])),
       locale
     }
+  }
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'ja' },
+      { params: { chain: 'chain', contractAddress: 'contractAddress' }, locale: 'en' }
+    ],
+    fallback: true
   }
 }
 
