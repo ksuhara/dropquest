@@ -12,7 +12,7 @@ export default async function stripeCheckout(req: NextApiRequest, res: NextApiRe
       const session = await stripe.checkout.sessions.create({
         line_items: [
           {
-            price: plan == 10 ? 'price_1LvZIeDh9iB9gv9LzXUycEkx' : 'price_1Lva4HDh9iB9gv9LLqEW4FGm',
+            price: plan == 100 ? 'price_1LvZIeDh9iB9gv9LzXUycEkx' : 'price_1Lva4HDh9iB9gv9LLqEW4FGm',
             quantity: 1
           }
         ],

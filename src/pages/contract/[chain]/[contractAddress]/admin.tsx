@@ -88,7 +88,7 @@ const EditionAdmin = ({ locale }: AdminProps) => {
   const [contractData, setContractData] = useState<any>()
   const [keys, setKeys] = useState<Key[]>([])
   const [rows, setRows] = useState<GridRowsProp>([])
-  const [plan, setPlan] = useState(10)
+  const [plan, setPlan] = useState(100)
 
   const [startPicker, setStartPicker] = useState<Date | null>(new Date())
   const date = new Date()
@@ -500,7 +500,7 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                                 onChange={e => setPlan(Number(e.target.value))}
                               >
                                 <MenuItem value={100}>100 mints - $5</MenuItem>
-                                <MenuItem value={1000}>1000 mints - $40</MenuItem>
+                                <MenuItem value={500}>500 mints - $20</MenuItem>
                               </Select>
                             </FormControl>
                           </DialogContent>
