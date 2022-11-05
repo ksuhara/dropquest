@@ -17,7 +17,7 @@ export default async function stripeCheckout(req: NextApiRequest, res: NextApiRe
           }
         ],
         mode: 'payment',
-        success_url: `${req.headers.origin}/?success=true`,
+        success_url: `${req.headers.origin}/contract/${chain}/${contractAddress}/admin`,
         cancel_url: `${req.headers.origin}/?canceled=true`,
         metadata: {
           contractAddress,
