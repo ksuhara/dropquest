@@ -135,7 +135,7 @@ const ContractQR = ({ locale }: ContractQRProps) => {
                       quality: 0.3,
                       level: 'M',
                       scale: 4,
-                      width: 360,
+                      width: 320,
                       color: {
                         dark: '#9155FD',
                         light: '#FFF'
