@@ -20,17 +20,13 @@ import { Key } from 'src/@core/utils/types'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 
-export async function getStaticProps({ locale }: any) {
+export async function getServerSideProps({ locale }: any) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['qr', 'common'])),
       locale
     }
   }
-}
-
-export async function getStaticPaths() {
-  return { paths: [], fallback: true }
 }
 
 interface ContractQRProps {

@@ -34,16 +34,12 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import initializeFirebaseClient from 'src/configs/initFirebase'
 import ChainContext from 'src/context/Chain'
 
-export async function getStaticProps({ locale }: any) {
+export async function getServerSideProps({ locale }: any) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['mint', 'common']))
     }
   }
-}
-
-export async function getStaticPaths() {
-  return { paths: [], fallback: true }
 }
 
 const Mint: NextPage = () => {

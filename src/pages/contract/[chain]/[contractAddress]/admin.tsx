@@ -54,17 +54,13 @@ import ChainContext from 'src/context/Chain'
 import useFirebaseUser from 'src/hooks/useFirebaseUser'
 import usePlacesAutocomplete, { getDetails, getGeocode, getLatLng } from 'use-places-autocomplete'
 
-export async function getStaticProps({ locale }: any) {
+export async function getServerSideProps({ locale }: any) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['admin'])),
       locale
     }
   }
-}
-
-export async function getStaticPaths() {
-  return { paths: [], fallback: true }
 }
 
 interface AdminProps {
