@@ -1,5 +1,6 @@
 # Omiyage NFT
-## 使用したtech stacks
+
+## 使用した tech stacks
 
 - BlockChain Related
   - Thirdweb
@@ -20,15 +21,29 @@
 - Payment
   - Stripe
   - Slash.fi
-  
+
 ### Architecture
+
 ![Test Image 1](images/architecture.jpg)
 
-## 使用したBlockchain
+## 使用した Blockchain
 
-## deployしたContract
+- Goerli
+- Mumbai
+- 今後は Thirdweb と OpenZeppelin が対応しているチェーン全てに対応予定です
+  - Ethereum
+  - Polygon
+  - Avalanche
+  - Optimism
+  - Arbitrum
+  - BSC
+  - Fantom
+
+## deploy した Contract
+
 - none
-- 今後NFT配布ツールは増えていくと思いますが、コントラクトは独自のものを使わず、監査されたものを使うべき＋ユーザーに主権があるものを使うべきという思想のもと、Thirdwebのコントラクトを使用しました
+- 今後 NFT 配布ツールは増えていくと思いますが、コントラクトは独自のものを使わず、監査されたものを使うべき＋ユーザーに主権があるものを使うべきという思想のもと、Thirdweb のコントラクトを使用しました
 
 ## 審査やテストのためにプロジェクトにアクセスする方法など
+
 https://omiyage-nft.vercel.app/
