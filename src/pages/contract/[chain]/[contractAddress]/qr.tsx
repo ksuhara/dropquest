@@ -89,15 +89,21 @@ const ContractQR = ({ locale }: ContractQRProps) => {
       return
     }
 
-    if ((!user && !loadingAuth) || (!user?.uid == contractData?.owner && !loadingAuth)) {
-      router.replace('/login')
+    console.log(user)
+    console.log(contractData)
+
+    if (
+      (!user && !loadingAuth) ||
+      ((!user?.uid == contractData?.owner || !user?.email == contractData?.allowed) && !loadingAuth)
+    ) {
+      router.replace(`/login/google?returnUrl=/contract/${chain}/${contractAddress}/qr`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadingAuth])
 
   return (
     <Grid container spacing={4}>
-      {contractData && user?.uid == contractData.owner && !isLoading ? (
+      {contractData && (user?.uid == contractData.owner || user?.email == contractData?.allowed) && !isLoading ? (
         <>
           <Grid item xs={12} md={6}>
             <img src={contractData.image} width={'100%'} alt='contract image'></img>

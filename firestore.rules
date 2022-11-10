@@ -10,6 +10,10 @@ service cloud.firestore {
       return isAnyAuthenticated() && request.auth.uid == address;
     }
 
+    function isGoogleAuthenticated(email){
+       return isAnyAuthenticated() && request.auth.token.email == email;
+    }
+
     function documentPath(paths) {
       return path([['databases', database, 'documents'].join('/'), paths.join('/')].join('/'));
     }
@@ -23,15 +27,16 @@ service cloud.firestore {
     }
 
     match /{path=**}/contracts/{contract}  {
-      allow read: if true
+      allow read: if true;
     }
 
     match /chain/{chain}/contracts/{contract}  {
       allow read, create, update, delete: if isUserAuthenticated(nftContract(chain, contract).owner);
+      allow read: if isGoogleAuthenticated(nftContract(chain, contract).allowed);
     }
 
     match /chain/{chain}/contracts/{contract}/keys/{key}  {
-      allow read: if isUserAuthenticated(nftContract(chain, contract).owner);
+      allow read: if isUserAuthenticated(nftContract(chain, contract).owner) || isGoogleAuthenticated(nftContract(chain, contract).allowed);
     }
   }
 }

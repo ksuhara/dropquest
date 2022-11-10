@@ -56,7 +56,11 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
         isPublic: false,
         startTime: new Date(),
         endTime: endTime
-      }
+      },
+      location: { name: '', latLng: { lat: 35.66, lng: 139.71 }, isActive: false },
+      twitterGate: { twitterId: '', isActive: false },
+      nftGate: { contractAddress: '', chainId: 'ethereum', isActive: false },
+      allowed: ''
     },
     { merge: true }
   )
