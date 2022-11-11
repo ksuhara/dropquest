@@ -81,7 +81,8 @@ const Mint: NextPage = () => {
 
   const nameToChainId: any = {
     goerli: 5,
-    mumbai: 80001
+    mumbai: 80001,
+    polygon: 137
   }
 
   useEffect(() => {

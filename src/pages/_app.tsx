@@ -106,7 +106,7 @@ const App = (props: ExtendedAppProps) => {
   const aclAbilities = Component.acl ?? defaultACLObj
 
   const relayerUrl = {
-    [String(ChainId.Goerli)]: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL_GOERLI || '',
+    [String(ChainId.Polygon)]: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL_POLYGON || '',
     [String(ChainId.Mumbai)]: process.env.NEXT_PUBLIC_OPENZEPPELIN_URL_MUMBAI || ''
   }
 

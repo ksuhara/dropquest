@@ -102,6 +102,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
     allowed: ''
   })
 
+  const basePath = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://omiyage-nft.vercel.app/'
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '',
     libraries: ['places']
@@ -293,7 +295,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
 
   const nameToChainId: any = {
     goerli: 5,
-    mumbai: 80001
+    mumbai: 80001,
+    polygon: 137
   }
 
   const matches: boolean = useMediaQuery('(min-width:577px)')
@@ -311,7 +314,6 @@ const EditionAdmin = ({ locale }: AdminProps) => {
   }
 
   useEffect(() => {
-    console.log(isLoaded, 'isLoaded')
     setSelectedChain(nameToChainId[chain as string])
 
     const syncData = async () => {
@@ -642,6 +644,9 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                       save
                     </Button>
                   </Box>
+                  <Typography marginBottom={2}>
+                    コピペしてください: {`${basePath}/login/google?returnUrl=/contract/${chain}/${contractAddress}/qr`}
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>

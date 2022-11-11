@@ -16,10 +16,16 @@ export default async function generateMintSignature(req: NextApiRequest, res: Ne
   }
   const keyData = doc.data()
 
-  const goerliSDK = ThirdwebSDK.fromPrivateKey(process.env.ADMIN_PRIVATE_KEY as string, chain)
+  const privKey = {
+    polygon: process.env.ADMIN_PRIVATE_KEY_POLYGON || '',
+    mumbai: process.env.ADMIN_PRIVATE_KEY || '',
+    goerli: process.env.ADMIN_PRIVATE_KEY || ''
+  }
+
+  const SDK = ThirdwebSDK.fromPrivateKey(privKey[chain as 'polygon' | 'mumbai' | 'goerli'], chain)
 
   if (keyData?.keyStatus != 'signatured') {
-    const edition = await goerliSDK.getContract(contractAddress, 'edition')
+    const edition = await SDK.getContract(contractAddress, 'edition')
     const mintSignature = await edition.signature.generateFromTokenId({
       tokenId: 0,
       quantity: 1,

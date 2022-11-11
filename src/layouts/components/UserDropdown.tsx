@@ -149,7 +149,7 @@ const UserDropdown = (props: Props) => {
                 flexDirection: 'column'
               }}
             >
-              <Typography sx={{ fontWeight: 600 }} noWrap>
+              <Typography sx={{ fontWeight: 600, maxWidth: 150 }} noWrap={true}>
                 {user?.uid}
               </Typography>
               {/* <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>

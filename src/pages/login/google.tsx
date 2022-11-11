@@ -15,7 +15,7 @@ import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
 import { GoogleAuthProvider, signInWithCustomToken, signInWithRedirect, signOut } from 'firebase/auth'
 import Google from 'mdi-material-ui/Google'
 import { useRouter } from 'next/router'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 // ** Hooks
 import useBgColor from 'src/@core/hooks/useBgColor'
@@ -114,21 +114,22 @@ const LoginPage = () => {
   const { skin } = settings
 
   const signInWithGoogle = async () => {
-    console.log('google')
+    // console.log(router.query.returnUrl)
+
     const provider = new GoogleAuthProvider()
+    // window.history.replaceState({ login: '', google: '' }, '', returnUrl as string)
     signInWithRedirect(auth, provider)
-      .then((userCredential: { user: any }) => {
+  }
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user && router.isReady) {
         const returnUrl = router.query.returnUrl
         console.log(returnUrl)
-        // const redirectURL = returnUrl && returnUrl !== '/home' ? returnUrl : '/'
-        const redirectURL = returnUrl
-        console.log(redirectURL)
-        router.replace(redirectURL as string)
-      })
-      .catch(error => {
-        console.error(error)
-      })
-  }
+        router.push(`${returnUrl as string}`)
+      }
+    })
+  }, [router])
 
   const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
 

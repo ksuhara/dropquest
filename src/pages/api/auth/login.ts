@@ -13,7 +13,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const sdk = ThirdwebSDK.fromPrivateKey(
     // https://portal.thirdweb.com/sdk/set-up-the-sdk/securing-your-private-key
     process.env.ADMIN_PRIVATE_KEY!,
-    'goerli' // configure this to your network
+    'polygon' // configure this to your network
   )
 
   let address
