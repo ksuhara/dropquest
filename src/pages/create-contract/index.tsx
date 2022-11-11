@@ -106,6 +106,11 @@ const CreateContractPage = () => {
     '137': 'polygon'
   }
 
+  const chainToMinter: any = {
+    '137': '0xB6Ac3Fe610d1A4af359FE8078d4c350AB95E812b',
+    '80001': '0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC'
+  }
+
   const deployContract = async () => {
     setLoading(true)
     handleClickOpen()
@@ -132,6 +137,7 @@ const CreateContractPage = () => {
 
       return
     })
+
     if (!contractAddress) return
     setActiveStep(1)
     const edition = await sdk.getContract(contractAddress, 'edition')
@@ -143,7 +149,7 @@ const CreateContractPage = () => {
         image: imageURL
       }
     }
-    await edition.roles.grant('minter', '0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC')
+    await edition.roles.grant('minter', chainToMinter[selectedChain])
     setActiveStep(2)
     await edition.erc1155.mintTo(address, tokenMetadata)
     setActiveStep(3)
