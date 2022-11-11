@@ -109,14 +109,14 @@ const LP = () => {
           )}
         </Box>
 
-        <Box marginY={4}>
+        <Grid marginY={4} item xs={12}>
           <TabContext value={tabMode}>
             <TabList onChange={handleTabChange} aria-label='simple tabs example'>
               <Tab value='ongoing' label={`${t('LP:upcoming_tab')}`} />
               <Tab value='past' label={`${t('LP:past_tab')}`} />
             </TabList>
           </TabContext>
-        </Box>
+        </Grid>
         {(tabMode == 'ongoing' ? ongoingEvent : pastEvent)?.map(contract => {
           return (
             <Grid item xs={12} md={10} key={contract.contractAddress}>
