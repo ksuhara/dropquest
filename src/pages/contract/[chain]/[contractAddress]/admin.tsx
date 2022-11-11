@@ -98,8 +98,11 @@ const EditionAdmin = ({ locale }: AdminProps) => {
     twitterGate: { twitterId: '', isActive: false },
     nftGate: { contractAddress: '', chainId: 'ethereum', isActive: false },
     location: { name: '', latLng: { lat: 35.66, lng: 139.71 }, isActive: false },
-    visibility: { isPublic: false }
+    visibility: { isPublic: false },
+    allowed: ''
   })
+
+  const basePath = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://omiyage-nft.vercel.app/'
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '',
@@ -107,11 +110,11 @@ const EditionAdmin = ({ locale }: AdminProps) => {
   })
 
   const handleChanges = (e: any) => {
-    console.log(e.target)
     if (e.target.name == 'twitterGate-twitterId') {
       setIsTwitterIdChanged(true)
     }
     const splitted = e.target.name.split('-')
+
     if (splitted[1] == 'isActive' || splitted[1] == 'isPublic') {
       setAdminEditData((prevState: any) => ({
         ...prevState,
@@ -120,13 +123,18 @@ const EditionAdmin = ({ locale }: AdminProps) => {
           [splitted[1]]: e.target.checked
         }
       }))
-    } else {
+    } else if (splitted[1]) {
       setAdminEditData((prevState: any) => ({
         ...prevState,
         [splitted[0]]: {
           ...prevState[splitted[0]],
           [splitted[1]]: e.target.value
         }
+      }))
+    } else {
+      setAdminEditData((prevState: any) => ({
+        ...prevState,
+        [splitted[0]]: e.target.value
       }))
     }
   }
@@ -139,7 +147,6 @@ const EditionAdmin = ({ locale }: AdminProps) => {
       twitter = await verifyTwitterGate()
       setIsTwitterIdChanged(false)
     }
-
     updateDoc(docRef, {
       nftGate: adminEditData.nftGate,
       twitterGate: twitter ? twitter : adminEditData.twitterGate,
@@ -148,7 +155,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
         isPublic: adminEditData.visibility.isPublic,
         startTime: startPicker,
         endTime: endPicker
-      }
+      },
+      allowed: adminEditData.allowed
     })
       .then(() => {
         toast.success('successfully saved!')
@@ -287,7 +295,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
 
   const nameToChainId: any = {
     goerli: 5,
-    mumbai: 80001
+    mumbai: 80001,
+    polygon: 137
   }
 
   const matches: boolean = useMediaQuery('(min-width:577px)')
@@ -305,7 +314,6 @@ const EditionAdmin = ({ locale }: AdminProps) => {
   }
 
   useEffect(() => {
-    console.log(isLoaded, 'isLoaded')
     setSelectedChain(nameToChainId[chain as string])
 
     const syncData = async () => {
@@ -318,7 +326,8 @@ const EditionAdmin = ({ locale }: AdminProps) => {
         twitterGate: docData?.twitterGate,
         nftGate: docData?.nftGate,
         location: docData?.location,
-        visibility: docData?.visibility
+        visibility: docData?.visibility,
+        allowed: docData?.allowed
       })
       setStartPicker(docData?.visibility?.startTime?.toDate())
       setEndPicker(docData?.visibility?.endTime?.toDate())
@@ -349,6 +358,23 @@ const EditionAdmin = ({ locale }: AdminProps) => {
     syncNfts()
   }, [nfts, selectedChain])
 
+  useEffect(() => {
+    if (!router.isReady) {
+      return
+    }
+
+    console.log(user)
+    console.log(contractData)
+
+    if (
+      (!user && !loadingAuth) ||
+      ((!user?.uid == contractData?.owner || !user?.email == contractData?.allowed) && !loadingAuth)
+    ) {
+      router.replace(`/login/google?returnUrl=/contract/${chain}/${contractAddress}/admin`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadingAuth])
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -374,7 +400,7 @@ const EditionAdmin = ({ locale }: AdminProps) => {
 
   return (
     <>
-      {contractData && user?.uid == contractData.owner ? (
+      {contractData && (user?.uid == contractData.owner || user?.email == contractData.allowed) ? (
         <>
           <Grid container justifyContent='space-between' sx={{ my: 4 }}>
             <Grid item>
@@ -538,6 +564,7 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                 </CardContent>
               </Card>
             </Grid>
+
             <Grid item xs={12} md={5}>
               <Card>
                 <CardHeader
@@ -578,7 +605,48 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                         renderInput={params => <TextField {...params} />}
                       />
                     </LocalizationProvider>
+                    <Button fullWidth variant='outlined' onClick={saveGate}>
+                      save
+                    </Button>
                   </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={10}>
+              <Card>
+                <CardHeader
+                  title='Collaborator'
+                  titleTypographyProps={{
+                    sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+                  }}
+                />
+                <CardContent>
+                  <Typography marginBottom={2}>
+                    {/* {t('admin:location_description')} */}
+                    ここで設定したgoogleアカウントでログインしたデバイスでは、ウォレットログインせずにQRコードを表示できます。
+                  </Typography>
+                  <Box
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      backgroundColor: 'background.paper'
+                    }}
+                  >
+                    <TextField
+                      value={adminEditData.allowed}
+                      onChange={handleChanges}
+                      name='allowed'
+                      label='google account'
+                      sx={{ mr: 4, width: 300 }}
+                    />
+                    <Button variant='outlined' onClick={saveGate} size='large'>
+                      save
+                    </Button>
+                  </Box>
+                  <Typography marginBottom={2}>
+                    コピペしてください: {`${basePath}/login/google?returnUrl=/contract/${chain}/${contractAddress}/qr`}
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -593,30 +661,30 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                         {/* {t('admin:location_description')} */}
                         リアルイベントや店舗の場合、場所を設定できます。
                       </Typography>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            size='medium'
-                            checked={adminEditData.location?.isActive}
-                            onChange={handleChanges}
-                            name='location-isActive'
-                          />
-                        }
-                        labelPlacement='start'
-                        label='Real Event?'
-                      />
-                      <Autocomplete
-                        sx={{ width: 350, mb: 2 }}
-                        options={data}
-                        id='autocomplete-outlined'
-                        getOptionLabel={option => option.description}
-                        renderInput={params => (
-                          <TextField {...params} label='Search Place' onChange={e => setMapName(e.target.value)} />
-                        )}
-                        disabled={!ready}
-                        onSelect={(e: any) => handleMapSelect(e.target.value)}
-                      />
-
+                      <Box
+                        sx={{
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          backgroundColor: 'background.paper',
+                          mb: 4
+                        }}
+                      >
+                        <Autocomplete
+                          sx={{ width: 350, mr: 4 }}
+                          options={data}
+                          id='autocomplete-outlined'
+                          getOptionLabel={option => option.description}
+                          renderInput={params => (
+                            <TextField {...params} label='Search Place' onChange={e => setMapName(e.target.value)} />
+                          )}
+                          disabled={!ready}
+                          onSelect={(e: any) => handleMapSelect(e.target.value)}
+                        />
+                        <Button variant='outlined' onClick={saveGate} size='large'>
+                          save
+                        </Button>
+                      </Box>
                       <GoogleMap
                         zoom={13}
                         center={
@@ -713,14 +781,11 @@ const EditionAdmin = ({ locale }: AdminProps) => {
                       </Select>
                     </Box>
                   </FormGroup>
+                  <Button variant='outlined' fullWidth onClick={saveGate} size='large' sx={{ mt: 4 }}>
+                    save
+                  </Button>
                 </CardContent>
               </Card>
-            </Grid>
-
-            <Grid item xs={12} md={10}>
-              <Button fullWidth variant='contained' onClick={saveGate}>
-                save
-              </Button>
             </Grid>
 
             <Grid item xs={12} md={10}>

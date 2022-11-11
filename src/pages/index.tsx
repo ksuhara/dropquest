@@ -9,6 +9,8 @@ import Grid from '@mui/material/Grid'
 import { styled } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { GoogleMap, OverlayView, useLoadScript } from '@react-google-maps/api'
 import Calendar from 'mdi-material-ui/Calendar'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -50,6 +52,16 @@ const LP = () => {
     setTabValue(newValue)
   }
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_API_KEY || '',
+    libraries: ['places', 'localContext']
+  })
+  const matches: boolean = useMediaQuery('(min-width:577px)')
+  const containerStyle = {
+    width: matches ? '60rem' : '20rem',
+    height: matches ? '500px' : '200px'
+  }
+
   useEffect(() => {
     if (!contractsDocument) return
 
@@ -66,32 +78,62 @@ const LP = () => {
       <Typography variant='subtitle1' sx={{ marginY: 2 }}>
         {t('LP:description')}
       </Typography>
-      <Box marginBottom={4}>
-        <TabContext value={tabMode}>
-          <TabList onChange={handleTabChange} aria-label='simple tabs example'>
-            <Tab value='ongoing' label={`${t('LP:upcoming_tab')}`} />
-            <Tab value='past' label={`${t('LP:past_tab')}`} />
-          </TabList>
-        </TabContext>
-      </Box>
-      <Grid container spacing={6}>
+
+      <Grid container spacing={6} marginTop={8}>
+        <Box marginLeft={2}>
+          {isLoaded ? (
+            <GoogleMap
+              zoom={12}
+              center={{ lat: 35.66, lng: 139.71 }}
+              mapContainerStyle={containerStyle}
+              options={{ disableDefaultUI: true }}
+            >
+              {ongoingEvent.map(ev => {
+                return (
+                  <>
+                    <OverlayView
+                      key={ev.contractAddress}
+                      position={ev.location.latLng}
+                      mapPaneName='overlayMouseTarget'
+                    >
+                      <Link href={`/contract/${ev.chain}/${ev.contractAddress}`}>
+                        <img src={ev.image} width='30' alt={ev.image}></img>
+                      </Link>
+                    </OverlayView>
+                  </>
+                )
+              })}
+            </GoogleMap>
+          ) : (
+            <></>
+          )}
+        </Box>
+
+        <Grid marginY={4} item xs={12}>
+          <TabContext value={tabMode}>
+            <TabList onChange={handleTabChange} aria-label='simple tabs example'>
+              <Tab value='ongoing' label={`${t('LP:upcoming_tab')}`} />
+              <Tab value='past' label={`${t('LP:past_tab')}`} />
+            </TabList>
+          </TabContext>
+        </Grid>
         {(tabMode == 'ongoing' ? ongoingEvent : pastEvent)?.map(contract => {
           return (
-            <Grid item xs={12} key={contract.contractAddress}>
+            <Grid item xs={12} md={10} key={contract.contractAddress}>
               <Link href={`/contract/${contract.chain}/${contract.contractAddress}`}>
                 <Card>
                   <Grid container>
-                    <Grid item xs={3} md={2}>
+                    <Grid item xs={3} md={3}>
                       <Img src={contract.image} alt='img'></Img>
                     </Grid>
-                    <Grid item xs={9} md={10}>
+                    <Grid item xs={9} md={9}>
                       <CardHeader title={contract.name} action={<Chip label={`${contract.chain}`} />}></CardHeader>
                       <CardContent>
                         <Grid container justifyContent='space-between'>
-                          <Grid item>
+                          <Grid item xs={9} md={7}>
                             <Typography noWrap>{contract.contractAddress}</Typography>
                           </Grid>
-                          <Grid item>
+                          <Grid item xs={9} md={5}>
                             <Grid container alignItems={'center'}>
                               <Calendar />
                               <Typography>

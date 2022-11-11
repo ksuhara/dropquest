@@ -15,7 +15,7 @@ import { useAddress, useMetamask, useSDK } from '@thirdweb-dev/react'
 import { GoogleAuthProvider, signInWithCustomToken, signInWithRedirect, signOut } from 'firebase/auth'
 import Google from 'mdi-material-ui/Google'
 import { useRouter } from 'next/router'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 // ** Hooks
 import useBgColor from 'src/@core/hooks/useBgColor'
@@ -98,9 +98,6 @@ const defaultValues = {
 // }
 
 const LoginPage = () => {
-  const address = useAddress()
-  const connectWithMetamask = useMetamask()
-  const sdk = useSDK()
   const { user } = useFirebaseUser()
   const router = useRouter()
 
@@ -116,41 +113,23 @@ const LoginPage = () => {
   // ** Vars
   const { skin } = settings
 
-  // const {
-  //   control,
-  //   setError,
-  //   handleSubmit,
-  //   formState: { errors }
-  // } = useForm({
-  //   defaultValues,
-  //   mode: 'onBlur',
-  //   resolver: yupResolver(schema)
-  // })
+  const signInWithGoogle = async () => {
+    // console.log(router.query.returnUrl)
 
-  async function signIn() {
-    // Use the same address as the one specified in _app.tsx.
-    const payload = await sdk?.auth.login('omiyage-nft.vercel.app')
-
-    // Make a request to the API with the payload.
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ payload })
-    })
-
-    const { token } = await res.json()
-    signInWithCustomToken(auth, token)
-      .then((userCredential: { user: any }) => {
-        const returnUrl = router.query.returnUrl
-        const redirectURL = returnUrl && returnUrl !== '/home' ? returnUrl : '/'
-        router.replace(redirectURL as string)
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    const provider = new GoogleAuthProvider()
+    // window.history.replaceState({ login: '', google: '' }, '', returnUrl as string)
+    signInWithRedirect(auth, provider)
   }
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user && router.isReady) {
+        const returnUrl = router.query.returnUrl
+        console.log(returnUrl)
+        router.push(`${returnUrl as string}`)
+      }
+    })
+  }, [router])
 
   const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
 
@@ -267,33 +246,11 @@ const LoginPage = () => {
             </Box>
 
             <form noValidate autoComplete='off'>
-              {/* <Box
-                sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
-              >
-                <FormControlLabel control={<Checkbox />} label='Remember Me' />
-              </Box> */}
-              {address ? (
-                <>
-                  {user ? (
-                    <Button onClick={() => signOut(auth)} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
-                      Sign Out
-                    </Button>
-                  ) : (
-                    <Button onClick={() => signIn()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
-                      Sign In
-                    </Button>
-                  )}
-                  <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
-                    <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                      Address: {address}
-                    </Typography>
-                  </Alert>
-                </>
-              ) : (
-                <Button onClick={() => connectWithMetamask()} fullWidth size='large' variant='contained' sx={{ mb: 7 }}>
-                  Connect Wallet
-                </Button>
-              )}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <IconButton component='a' onClick={signInWithGoogle}>
+                  <Google sx={{ color: '#db4437' }} />
+                </IconButton>
+              </Box>
             </form>
           </BoxWrapper>
         </Box>
