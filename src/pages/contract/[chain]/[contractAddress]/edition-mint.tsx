@@ -248,7 +248,7 @@ const Mint: NextPage = () => {
             ) : (
               <></>
             )}
-            <Typography sx={{ my: 4 }}>{t('mint:description')}</Typography>
+            <Typography sx={{ my: 4 }}>{contractData?.description}</Typography>
             <Box marginTop={4}>
               <>
                 {contractData?.twitterGate?.isActive ? (

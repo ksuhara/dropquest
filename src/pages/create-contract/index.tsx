@@ -190,7 +190,7 @@ const CreateContractPage = () => {
                 value={String(selectedChain)}
                 onChange={e => setSelectedChain(parseInt(e.target.value))}
               >
-                <MenuItem value={String(ChainId.Polygon)}>Polygon</MenuItem>
+                {/* <MenuItem value={String(ChainId.Polygon)}>Polygon</MenuItem> */}
                 <MenuItem value={String(ChainId.Mumbai)}>Mumbai</MenuItem>
               </Select>
             </FormControl>
