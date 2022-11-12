@@ -31,8 +31,12 @@ export default async function registerNFTContract(req: NextApiRequest, res: Next
   if (contractOwner != address) {
     return res.status(400).send({ error: 'not an owner' })
   }
-  if (!minters.includes('0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC')) {
-    return res.status(400).send({ error: 'please add 0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC to minter' })
+  const chainToMinter: any = {
+    polygon: '0xB6Ac3Fe610d1A4af359FE8078d4c350AB95E812b',
+    mumbai: '0x6a84E19A4801E5F003ea9d3202a38AE6a864DfdC'
+  }
+  if (!minters.includes(chainToMinter[chain])) {
+    return res.status(400).send({ error: `please add ${chainToMinter[chain]} to minter` })
   }
 
   const date = new Date()
