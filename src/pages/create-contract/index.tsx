@@ -139,6 +139,17 @@ const CreateContractPage = () => {
     })
 
     if (!contractAddress) return
+    await fetch(`/api/register-nft-contract`, {
+      method: 'POST',
+      body: JSON.stringify({
+        nftAddress: contractAddress,
+        address,
+        chain: chainToName[String(selectedChain)]
+      }),
+      headers: {
+        Authorization: idToken || 'unauthenticated'
+      }
+    })
     setActiveStep(1)
     const edition = await sdk.getContract(contractAddress, 'edition')
 
@@ -154,17 +165,6 @@ const CreateContractPage = () => {
     await edition.erc1155.mintTo(address, tokenMetadata)
     setActiveStep(3)
 
-    await fetch(`/api/register-nft-contract`, {
-      method: 'POST',
-      body: JSON.stringify({
-        nftAddress: contractAddress,
-        address,
-        chain: chainToName[String(selectedChain)]
-      }),
-      headers: {
-        Authorization: idToken || 'unauthenticated'
-      }
-    })
     setLoading(false)
     router.replace('/home')
   }
